@@ -39,7 +39,17 @@ async function run() {
 run().catch(console.dir);
 
 const netflixRoutes = require("./services/netflix");
+const spotifyRoutes = require("./services/spotify");
+const youtubeRoutes = require("./services/youtube");
+const primeRoutes = require("./services/prime");
+const hboRoutes = require("./services/hbo");
+const disneyRoutes = require("./services/disney");
 
-app.use("/subscribe/netflix", netflixRoutes);
+app.use("/service/netflix", netflixRoutes);
+app.use("/service/spotify", spotifyRoutes);
+app.use("/service/youtube", youtubeRoutes);
+app.use("/service/prime", primeRoutes);
+app.use("/service/hbo", hboRoutes);
+app.use("/service/disney", disneyRoutes);
 
 app.listen(5000, () => console.log("Server running at PORT 5000"));

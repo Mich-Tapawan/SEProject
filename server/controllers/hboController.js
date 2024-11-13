@@ -1,11 +1,11 @@
 exports.subscribe = (req, res) => {
-  res.send("subscribed to Netflix");
+  res.send("subscribed to HBO GO");
 };
 
 exports.checkStatus = (req, res) => {
-  res.send("Netflix subscription is active.");
+  res.send("HBO GO subscription is active.");
 };
 
 exports.unsubscribe = (req, res) => {
-  res.send("Unsubscribed from Netflix.");
+  res.send("Unsubscribed from HBO GO.");
 };
