@@ -47,3 +47,6 @@ function run() {
     });
 }
 run().catch(console.dir);
+const netflixRoutes = require("./services/netflix");
+app.use("/subscribe/netflix", netflixRoutes);
+app.listen(5000, () => console.log("Server running at PORT 5000"));
