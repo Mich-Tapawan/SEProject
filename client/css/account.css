@@ -7,3 +7,7 @@
   --primary: #ff2575;
   --secondary: #b411ff;
 }
+
+body {
+  background: var(--dark);
+}
