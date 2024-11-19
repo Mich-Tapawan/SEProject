@@ -5,10 +5,15 @@
 }
 
 nav {
+  position: fixed;
   display: flex;
   color: var(--primary);
+  align-items: center;
   justify-content: space-between;
   padding-inline: 10rem;
+  top: 2;
+  left: 0;
+  right: 0;
 }
 
 .brand {
@@ -35,15 +40,17 @@ nav {
   list-style: none;
   flex-direction: row;
   gap: 2rem;
+  align-items: center;
 }
 
-.nav-list li {
+.nav-list li:not(:last-child) {
   text-align: center;
   width: 6rem;
+  height: 1.7rem;
   border-radius: 50px;
 }
 
-.nav-list li:hover {
+.nav-list li:not(:last-child):hover {
   background-color: var(--primary);
 }
 
@@ -58,9 +65,20 @@ nav {
 
 .bell-wrapper {
   width: 2rem;
+  cursor: pointer;
 }
 
 .bell-wrapper img {
+  width: 100%;
+}
+
+.burger-wrapper {
+  display: none;
+  width: 3rem;
+  cursor: pointer;
+}
+
+.burger-wrapper img {
   width: 100%;
 }
 
@@ -69,23 +87,42 @@ nav {
     padding-inline: 6rem;
   }
 }
+
 @media (max-width: 1024px) {
   nav {
-    padding-inline: 4rem;
+    padding-inline: 3rem;
   }
+
   .nav-list {
-    gap: 0.5rem;
+    width: 100%;
+    background-color: var(--primary);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    gap: 0.3rem;
+    flex-direction: column;
+  }
+
+  .nav-list li a {
+    color: white;
+    text-align: center;
+  }
+
+  .bell-wrapper {
+    display: none;
+  }
+
+  .burger-wrapper {
+    display: block;
   }
 }
+
 @media (max-width: 768px) {
   nav {
     padding-inline: 2rem;
   }
-
-  .nav-list {
-    display: none;
-  }
 }
+
 @media (max-width: 640px) {
   nav {
     padding-inline: 1rem;
