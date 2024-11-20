@@ -5,21 +5,31 @@
 }
 
 nav {
+  background-color: var(--dark);
   position: fixed;
+  top: 2;
+  left: 0;
+  right: 0;
+  padding-inline: 10rem;
+}
+
+.nav-content {
   display: flex;
   color: var(--primary);
   align-items: center;
   justify-content: space-between;
-  padding-inline: 10rem;
-  top: 2;
-  left: 0;
-  right: 0;
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.nav-gradient {
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, #ff052f, #7a3a97);
 }
 
 .logo-wrapper {
@@ -48,6 +58,9 @@ nav {
   width: 6rem;
   height: 1.7rem;
   border-radius: 50px;
+}
+.notif-text {
+  display: none;
 }
 
 .nav-list li:not(:last-child):hover {
@@ -106,6 +119,10 @@ nav {
   .nav-list li a {
     color: white;
     text-align: center;
+  }
+
+  .notif-text {
+    display: block;
   }
 
   .bell-wrapper {
