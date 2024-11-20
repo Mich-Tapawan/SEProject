@@ -1,0 +1,773 @@
+:root {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", "serif";
+  --primary: #ff2575;
+  --secondary: #b411ff;
+  --dark: #0d0d1b;
+}
+
+body {
+  background: var(--dark);
+  color: #ffffff;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+/* Modified Code */
+#login-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  font-size: 45px;
+  font-weight: lighter;
+  margin-bottom: 5px;
+}
+
+h3 {
+  max-width: 800px;
+  font-size: 60px;
+  margin-top: 5px;
+}
+
+.highlight {
+  color: #ff2575;
+}
+
+/* .horizontal-line {
+  width: 80%;
+  height: 5px;
+  background-color: #ff2575;
+  margin: 20px auto;
+  background: linear-gradient(to right, #ff052f, #7a3a97);
+} */
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input,
+select,
+button {
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 30px;
+}
+
+input,
+select {
+  background: #eee;
+  color: #000;
+}
+
+button {
+  padding: 20px 20px;
+  font-size: 16px;
+  background: #ff2575;
+  color: #fff;
+  cursor: pointer;
+  width: 180px;
+}
+
+button:hover {
+  background-color: #ff2575;
+  color: #fff;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.buttons button {
+  max-width: 160px;
+}
+
+input[type="email"] {
+  width: 75%; /* Adjust the percentage as needed */
+  margin: 0 auto; /* Center the input boxes */
+  height: 30px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  margin-top: -35px;
+}
+
+input[type="password"] {
+  width: 75%; /* Adjust the percentage as needed */
+  margin: 0 auto; /* Center the input boxes */
+  height: 30px;
+  border-radius: 5px;
+}
+
+button.signup {
+  background-color: #0d0d1b; /* Original background color */
+  color: #ff2575;
+  border: 2px solid #ff2575;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  height: 55px;
+  font-weight: bold;
+}
+
+button.signup:hover {
+  background-color: #ff2575; /* Pink background */
+  color: #fff;
+  border-color: #ff2575; /* Ensure border remains pink on hover */
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease; /* Smooth transition */
+}
+
+#signup-form button:hover {
+  background-color: #ff2575;
+  color: #fff;
+}
+
+#login-form button:hover,
+#signup-form button:hover {
+  background-color: #ff2575; /* Pink background */
+  color: #fff; /* White text */
+}
+
+h4 {
+  text-align: left;
+  font-size: 45px;
+  font-weight: lighter;
+}
+
+/* Sign-Up Specific Styles */
+#signup-form .container {
+  max-width: 100%; /* Full width only for the Sign-Up container */
+  margin: 0; /* Remove centering */
+  padding: 0; /* Remove padding */
+}
+
+#signup-form h4 {
+  text-align: left; /* Align only the Sign-Up heading to the left */
+  font-size: 45px;
+  font-weight: lighter;
+  margin: 0; /* Remove margins */
+  padding: 0 155px; /* Add optional padding */
+  display: block;
+  width: 80%; /* Ensure full width */
+  margin-top: 45px;
+}
+
+#signup-form input[type="email"],
+#signup-form input[type="password"],
+#signup-form input[type="text"] {
+  width: 70%; /* Match the width of the login form inputs */
+  margin: 0 auto; /* Center the input fields */
+  height: 30px; /* Match the height of the login form inputs */
+  border-radius: 5px; /* Match the border radius */
+  margin-bottom: 20px; /* Add space below the fields */
+}
+
+#signup-form input {
+  width: 70%; /* Use a percentage for responsiveness */
+  max-width: 300px; /* Prevent the input fields from becoming too wide */
+  margin: 0 auto;
+  height: 30px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+#signup-form input[name="first_name"] {
+  display: block;
+  width: 70%; /* Ensure consistent input width */
+  max-width: 440px; /* Limit input size */
+  height: 30px;
+  margin-left: 155px; /* Align with the heading */
+  border-radius: 5px;
+  margin-bottom: 30px; /* Add spacing below the field */
+  margin-top: 60px;
+}
+
+#signup-form input[name="last_name"] {
+  display: block;
+  width: 70%;
+  max-width: 440px;
+  height: 30px;
+  margin-left: 155px; /* Align with the first name field */
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+#signup-form select[name="province"] {
+  display: block;
+  width: 100%;
+  max-width: 120px;
+  height: 40px;
+  margin-left: 15px; /* Align with the first name field */
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+#signup-form select[name="city"] {
+  display: block;
+  width: 120%;
+  max-width: 120px;
+  height: 50px;
+  margin-left: 40px; /* Align with the first name field */
+  border-radius: 5px;
+  margin-bottom: 20px;
+  color: grey;
+}
+
+#signup-form select[name="province"] {
+  display: block;
+  width: 120%;
+  max-width: 120px;
+  height: 50px;
+  margin-left: 155px; /* Align with the first name field */
+  border-radius: 5px;
+  margin-bottom: 20px;
+  color: grey;
+}
+
+#signup-form input[name="zip_code"] {
+  display: block;
+  width: 70%;
+  max-width: 120px;
+  height: 30px;
+  margin-left: 40px; /* Align with the first name field */
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.form-group-row {
+  display: flex; /* Arrange elements in a row */
+  justify-content: flex-start; /* Start elements from the left */
+  gap: -200px; /* Add spacing between fields */
+  margin-left: 0px; /* Ensure it aligns with the Province field */
+}
+
+#signup-form input[name="address"] {
+  display: block;
+  width: 70%;
+  max-width: 440px;
+  height: 30px;
+  margin-left: 155px; /* Align with the first name field */
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+#signup-form .terms {
+  display: block;
+  width: 70%; /* Ensure consistent input width */
+  max-width: 500px; /* Limit input size */
+  height: 30px;
+  margin-left: 138px; /* Align with the heading */
+  border-radius: 5px;
+  margin-bottom: 30px; /* Add spacing below the field */
+  margin-top: 0px;
+}
+
+#signup-form input[name="email"] {
+  display: block;
+  width: 70%;
+  max-width: 440px;
+  height: 30px;
+  margin-right: 300px; /* Align with the first name field */
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+#signup-form input[name="password"] {
+  display: block;
+  width: 70%;
+  max-width: 440px;
+  height: 30px;
+  margin-right: 300px; /* Align with the first name field */
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+#signup-form input[name="contact_no"] {
+  display: block;
+  width: 70%;
+  max-width: 440px;
+  height: 30px;
+  margin-right: 300px; /* Align with the first name field */
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+#signup-form input[name="email"] {
+  position: absolute;
+  top: 244px;
+  left: 720px; /* Align with first name */
+  width: 440px;
+}
+
+#signup-form input[name="password"] {
+  position: absolute;
+  top: 324px;
+  left: 720px; /* Align with last name */
+  width: 440px;
+}
+
+#signup-form input[name="contact_no"] {
+  position: absolute;
+  top: 404px;
+  left: 720px; /* Align with zip code */
+  width: 440px;
+}
+
+#signup-form input,
+select,
+button {
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 30px;
+}
+
+#signup-form input,
+select {
+  background: #eee;
+  color: #000;
+}
+
+#signup-form button {
+  padding: 20px 20px;
+  font-size: 16px;
+  background: #ff2575;
+  color: #fff;
+  cursor: pointer;
+  width: 180px;
+}
+
+#signup-form button:hover {
+  background-color: #ff2575;
+  color: #fff;
+}
+
+#signup-form .buttons {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 40px;
+  width: 100%; /* Ensure it takes up the full width */
+  margin-left: -1015px; /* Adjust this value to align with Terms */
+}
+
+#signup-form .buttons button {
+  background-color: #0d0d1b; /* Set background color */
+  color: #ff2575; /* Set text color */
+  border: 2px solid #ff2575; /* Set border color */
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  height: 55px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease; /* Smooth transition */
+}
+
+/* Hover Effect */
+#signup-form .buttons button:hover {
+  background-color: #ff2575; /* Change background color to pink */
+  color: #fff; /* Change text color to white */
+  border-color: #ff2575; /* Keep the pink border color on hover */
+}
+
+/* Optional: Specific styles for Cancel button */
+#signup-form .buttons .cancel {
+  background-color: #0d0d1b; /* Same background for cancel */
+  color: #ff2575; /* Same text color for cancel */
+  border: 2px solid #ff2575; /* Same border color for cancel */
+}
+
+#signup-form .buttons .cancel:hover {
+  background-color: #ff2575; /* Pink background on hover for cancel */
+  color: #fff; /* White text on hover for cancel */
+  border-color: #ff2575; /* Ensure pink border on hover for cancel */
+}
+
+#payment-method .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.payment-options {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  margin: 20px auto;
+}
+
+.bank-card,
+.mobile-payment {
+  background-color: #1e1e30;
+  border-radius: 10px;
+  padding: 20px;
+  width: 48%;
+  color: #fff;
+}
+
+.bank-card input,
+.mobile-payment input,
+.bank-card select,
+.mobile-payment select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #eee;
+  color: #000;
+}
+
+.bank-card .form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bank-card .form-row input {
+  width: 48%;
+}
+
+button.register {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.bank-register {
+  background-color: #ff2575;
+  color: #fff;
+}
+
+button.mobile-register {
+  background-color: #8a56ac;
+  color: #fff;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+#payment-method label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ccc;
+  margin-bottom: 5px;
+}
+
+#payment-method input,
+#payment-method select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #eee;
+  color: #000;
+}
+
+#payment-method .container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align items at the top */
+}
+
+.payment-options {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  gap: 20px;
+  margin: 20px auto;
+}
+
+.bank-card,
+.mobile-payment {
+  background-color: transparent; /* Removed the square-like background */
+  border-radius: 10px;
+  padding: 20px;
+  width: 48%;
+  color: #fff;
+}
+
+.bank-card input,
+.mobile-payment input,
+.bank-card select,
+.mobile-payment select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #eee;
+  color: #000;
+}
+
+.bank-card .form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bank-card .form-row input {
+  width: 48%;
+}
+
+button.register {
+  background-color: #ff2575;
+  color: #fff;
+  border-radius: 30px;
+  padding: 20px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 180px;
+  position: relative;
+  border: 2px solid transparent; /* Initially set border to transparent */
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+button.bank-register {
+  background-color: #ff2575;
+  color: #fff;
+}
+
+button.mobile-register {
+  background-color: #8a56ac;
+  color: #fff;
+}
+
+button.register:hover {
+  color: #fff; /* Ensure text color remains white */
+  border-color: #ff2575; /* Pink border */
+}
+
+#payment-method label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ccc;
+  margin-bottom: 5px;
+}
+
+#payment-method input,
+#payment-method select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #eee;
+  color: #000;
+}
+
+h5 {
+  font-size: 45px;
+  font-weight: lighter;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+h6 {
+  text-align: left;
+  font-size: 45px;
+  font-weight: lighter;
+}
+
+.mobile-payment {
+  background-color: transparent;
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+  margin-right: -480px;
+  margin-top: -80px;
+  text-align: left; /* Align text to the left */
+  color: #fff;
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  align-items: flex-start; /* Align content to the start of the card */
+}
+
+#payment-method .container {
+  display: flex;
+  justify-content: space-between; /* Space out bank card and mobile payment */
+  align-items: flex-start; /* Align items to the top */
+  width: 100%; /* Adjust container width as needed */
+  margin: 20px auto; /* Center the container horizontally */
+}
+
+.payment-options {
+  display: flex;
+  justify-content: space-between; /* Bank card to the left, mobile payment to the right */
+  gap: 20px; /* Space between the two sections */
+  width: 100%; /* Full width for proper alignment */
+}
+
+.bank-card {
+  background-color: transparent;
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+  margin-left: -330px;
+  margin-top: -10px;
+  text-align: left; /* Align text to the left */
+  color: #fff;
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  align-items: flex-start; /* Align content to the start of the card */
+}
+
+.payment-method .container {
+  display: flex;
+  justify-content: space-between; /* Space out the fields */
+  gap: 10px; /* Adjust space between fields */
+  width: 100%;
+}
+
+.bank-card .form-row input {
+  width: 48%; /* Make each input take up 48% of the available space */
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: #eee;
+  color: #000;
+}
+
+#payment-method .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.payment-options {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 20px;
+}
+
+.payment-option {
+  background-color: #1e1e30;
+  border-radius: 10px;
+  padding: 20px;
+  width: 48%;
+  color: #fff;
+}
+
+.bank-card input,
+.mobile-payment input,
+.bank-card select,
+.mobile-payment select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #eee;
+  color: #000;
+}
+
+.bank-card .form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bank-card .form-row input {
+  width: 48%;
+}
+
+button.register {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.bank-register {
+  background-color: #ff2575;
+  color: #fff;
+}
+
+button.mobile-register {
+  background-color: #8a56ac;
+  color: #fff;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+#payment-method label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ccc;
+  margin-bottom: 5px;
+}
+
+.bank-card .form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 2px; /* Adjust spacing below the row */
+}
+
+.bank-card .form-row input {
+  width: 300%; /* Ensure both fields are side by side and occupy half the width */
+}
+
+@media screen and (max-width: 768px) {
+  .bank-card .form-row {
+    flex-direction: column; /* Stack fields vertically on smaller screens */
+    gap: 10px;
+  }
+
+  .bank-card .form-row input {
+    width: 50%; /* Make the inputs full width */
+  }
+}
+
+.or-text {
+  font-size: 50px; /* Adjust size as needed */
+  margin: 20px 0;
+  color: #ff2575; /* Set text color */
+  font-weight: bold; /* Optional: make it bold */
+  text-align: center;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+  position: relative;
+  left: -150px; /* Move logo 20px to the left */
+  margin-bottom: -25px;
+}

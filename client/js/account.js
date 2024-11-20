@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial Account Page state
   detailsBtn.style.color = "#ff2575";
-  detailsSection.style.display = "none";
-  subscriptionsSection.style.display = "block";
+  detailsSection.style.display = "block";
+  subscriptionsSection.style.display = "none";
   settingsSection.style.display = "none";
 
   // sidebar section toggling

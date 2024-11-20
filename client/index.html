@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MMM Inc. - Log In</title>
+    <link rel="stylesheet" href="/client/css/index.css" />
+    <link rel="stylesheet" href="/client//css/nav.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inknut+Antiqua:wght@300;400;500;600;700;800;900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <nav>
+      <div class="nav-content" style="margin-block: 0.5rem">
+        <div class="brand">
+          <div class="logo-wrapper">
+            <img src="/client/assets/brand_logo.png" alt="" />
+          </div>
+          <span>MMM Inc.</span>
+        </div>
+      </div>
+      <div class="nav-gradient"></div>
+    </nav>
+
+    <!-- Login Section -->
+    <section id="login-form">
+      <div class="container">
+        <h2>Welcome.</h2>
+        <h3>Want to <span class="highlight">Automate?</span></h3>
+        <form action="#" method="POST">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+          <p class="terms">
+            By signing in, you are agreeing to our
+            <span class="highlight" style="cursor: pointer"
+              >Terms and Privacy Policy</span
+            >
+          </p>
+          <div class="buttons">
+            <button type="submit" class="login">Log In</button>
+            <button
+              type="button"
+              class="signup"
+              onclick="showForm('signup-form')"
+            >
+              Sign Up
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Sign-Up Form Section -->
+    <section id="signup-form" style="display: none">
+      <div class="container">
+        <h4>Sign Up</h4>
+        <form action="#" method="POST">
+          <div class="form-group">
+            <input
+              type="text"
+              name="first_name"
+              placeholder="First Name"
+              required
+            />
+            <input
+              type="text"
+              name="last_name"
+              placeholder="Last Name"
+              required
+            />
+          </div>
+          <div class="form-group-row">
+            <select name="province" required>
+              <option value="">Province</option>
+              <option value="">Cavite</option>
+            </select>
+            <select name="city" required>
+              <option value="">City</option>
+              <option value="">Bacoor</option>
+              <option value="">Cavite City</option>
+              <option value="">Dasmariñas</option>
+              <option value="">Imus</option>
+              <option value="">Tagaytay</option>
+              <option value="">General Trias</option>
+              <option value="">Trece Martires</option>
+            </select>
+            <input
+              type="text"
+              name="zip_code"
+              placeholder="Zip Code"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="text"
+              name="address"
+              placeholder="House No. / Street / Barangay"
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+            <input
+              type="text"
+              name="contact_no"
+              placeholder="Contact No."
+              required
+            />
+          </div>
+          <p class="terms">
+            By signing up, you are agreeing to our
+            <span class="highlight">Terms and Privacy Policy</span>
+          </p>
+          <div class="buttons">
+            <button
+              type="button"
+              class="next"
+              onclick="showForm('payment-method')"
+            >
+              Next
+            </button>
+            <button
+              type="button"
+              class="cancel"
+              onclick="showForm('login-form')"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="payment-method" style="display: none">
+      <div class="container">
+        <h3 class="or-text">or</h3>
+        <div class="payment-options">
+          <!-- Bank Card Section -->
+          <div class="bank-card">
+            <h5>Bank Card</h5>
+            <form>
+              <label for="card_number">Card Number</label>
+              <input
+                type="text"
+                id="card_number"
+                name="card_number"
+                placeholder="Enter your card number"
+              />
+
+              <div class="form-row">
+                <div>
+                  <label for="expiry_date">Expiry Date</label>
+                  <input
+                    type="date"
+                    id="expiry_date"
+                    name="expiry_date"
+                    placeholder="MM / YY"
+                  />
+                </div>
+                <div>
+                  <label for="cvv">Security Code</label>
+                  <input
+                    type="text"
+                    id="cvv"
+                    name="cvv"
+                    placeholder="Enter CVV"
+                  />
+                </div>
+              </div>
+
+              <label for="card_name">Name on Card</label>
+              <input
+                type="text"
+                id="card_name"
+                name="card_name"
+                placeholder="Enter name on card"
+              />
+
+              <button type="button" class="register bank-register">
+                REGISTER
+              </button>
+            </form>
+          </div>
+
+          <!-- Mobile Payment Section -->
+          <div class="mobile-payment">
+            <h6>Mobile</h6>
+            <form>
+              <label for="mobile_number">Contact Number</label>
+              <input
+                type="mobile"
+                id="mobile_number"
+                name="mobile_number"
+                placeholder="Enter your mobile number"
+              />
+
+              <label for="carrier">Select Carrier</label>
+              <select id="carrier" name="carrier">
+                <option value="SMART">SMART</option>
+                <option value="GLOBE">GLOBE</option>
+                <option value="SUN">SUN</option>
+                <option value="DITO">DITO</option>
+              </select>
+
+              <button type="button" class="register mobile-register">
+                REGISTER
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="/client/js/script.js"></script>
+    <script src="/client/js/nav.js"></script>
+  </body>
+</html>
