@@ -15,13 +15,17 @@ body {
   margin: 0;
 }
 
+.main-content {
+  padding-top: 8rem;
+  padding-inline: 10rem;
+}
+
 h1 {
   margin: 0;
   font-size: 2rem;
-  color: #9b1f53;
+  color: #ff2575;
   font-family: Poppins, Arial, Helvetica, sans-serif;
   text-align: center;
-  margin-top: 100px;
 }
 
 main {
@@ -36,8 +40,7 @@ main {
 }
 
 .subscription-item {
-  background: #fff;
-  border: 1px solid #ddd;
+  background: #16162e;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 1rem;
@@ -46,7 +49,7 @@ main {
 
 .subscription-item h2 {
   margin-top: 0;
-  color: #9b1f53;
+  color: #ff2575;
 }
 
 .subscription-item p {
@@ -55,7 +58,7 @@ main {
 }
 
 button {
-  background-color: #9b1f53;
+  background-color: #ff2575;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -66,5 +69,4 @@ button {
 
 .subscription-item img {
   width: 150px;
-  height: 100px;
 }
