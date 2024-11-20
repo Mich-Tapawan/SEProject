@@ -45,22 +45,22 @@
 
       <div class="grid-container">
         <div class="sidebar">
-          <div class="sidebar-item" id="details">
+          <div class="sidebar-item" id="details" data-sec="details">
             <span class="mdi--person-box"></span>
             <h2>My Details</h2>
           </div>
-          <div class="sidebar-item" id="subscriptions">
+          <div class="sidebar-item" id="subscriptions" data-sec="subscriptions">
             <span class="ic--outline-currency-exchange"></span>
             <h2>Subscriptions</h2>
           </div>
-          <div class="sidebar-item" id="settings">
+          <div class="sidebar-item" id="settings" data-sec="settings">
             <span class="uil--setting"></span>
             <h2>Settings</h2>
           </div>
         </div>
 
         <div class="box">
-          <div class="info-container">
+          <div class="info-container" id="details-sec">
             <div class="basic-info">
               <h3>Basic Info</h3>
               <ul>
@@ -122,6 +122,14 @@
               </ul>
             </div>
           </div>
+          <div class="subscriptions" id="subscriptions-sec">
+            <ul class="sub-list"></ul>
+            <div class="no-subs">
+              <img src="/client/assets/sad_robot.png" alt="" />
+              <p>No service currently subscribed...</p>
+            </div>
+          </div>
+          <div class="settings" id="settings-sec"></div>
         </div>
       </div>
     </div>

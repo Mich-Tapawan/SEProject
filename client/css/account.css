@@ -141,6 +141,21 @@ body {
   font-size: 1.3rem;
 }
 
+.no-subs {
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #55556c;
+  font-size: 1.2rem;
+}
+
+.no-subs img {
+  width: 200px;
+}
+
 @media (max-width: 1536px) {
   .box {
     padding-inline: 2rem;
