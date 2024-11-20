@@ -1,0 +1,81 @@
+:root {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", "serif";
+  --primary: #ff2575;
+  --secondary: #b411ff;
+  --dark: #0d0d1b;
+}
+
+body {
+  background: var(--dark);
+  color: #ffffff;
+  padding: 0;
+  margin: 0;
+}
+
+.image-grid {
+  position: absolute;
+  display: grid;
+  right: 0;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  grid-template-rows: repeat(3, auto); /* 3 rows */
+
+  align-items: center;
+  width: 50vh; /* Center images vertically within their cells */
+  height: 90vh; /* Full height of the viewport */
+  justify-items: left; /* Align images to the right of each cell */
+  align-items: right;
+  margin-right: 200px;
+}
+
+.image-grid img {
+  width: 200px; /* Fixed width for the images */
+  height: 180px; /* Equal height to maintain aspect ratio */
+  object-fit: cover; /* Maintain image proportions */
+  border-radius: 0%; /* No border-radius */
+}
+
+.subscribe-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 600px;
+  height: 150px;
+  background-color: #9b1f53;
+  color: #ffffff;
+  font-size: 70px;
+  font-weight: bold;
+  border-radius: 50px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: "Poppins", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  cursor: pointer;
+  transition: transform 0.5s, box-shadow 0.2s;
+  margin-top: 650px;
+  margin-left: 100px;
+}
+
+.subscribe-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.subscribe-link {
+  text-decoration: none;
+  color: #9b1f53;
+}
+
+/* Optional: For responsiveness, you can tweak the layout on smaller screens */
+@media screen and (max-width: 768px) {
+  .image-grid {
+    grid-template-columns: 1fr; /* Single column on small screens */
+    grid-template-rows: repeat(6, auto); /* Adjust rows for single column */
+  }
+  .image-grid img {
+    width: 60px; /* Adjust image size for smaller screens */
+    height: 60px; /* Keep it round by matching height and width */
+  }
+}
