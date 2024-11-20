@@ -16,23 +16,88 @@ body {
 }
 
 .main-content {
-  padding-top: 6rem;
+  display: grid;
+  height: 100vh;
+  grid-template-columns: 1fr 30%;
+  padding-top: 2rem;
   padding-inline: 10rem;
+  gap: 30%;
+  align-items: center;
+}
+
+.user-info {
+  width: 100%;
+  height: fit-content;
+  grid-template-rows: repeat(3, 100%);
+  gap: 2rem;
+}
+
+.row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.user-info .box {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #16162e;
+  gap: 0.5rem;
+}
+
+.user-info .row:nth-child(1) .box {
+  border-radius: 25px;
+}
+
+.balance {
+  text-align: start;
+  padding: 2rem;
+}
+
+.balance h1 {
+  font-weight: 400;
+  margin: 0;
+}
+
+.balance p {
+  font-weight: bold;
+  font-size: 5rem;
+  margin: 0;
+}
+
+.smaller-box {
+  border-radius: 15px;
+  padding: 1rem;
+}
+
+.smaller-box h2 {
+  font-size: 1.4rem;
+  font-weight: 300;
+  margin: 0;
+}
+
+.smaller-box p {
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin: 0;
+  margin: 0;
+}
+
+#wallet {
+  background-color: #b411ff;
 }
 
 .image-grid {
-  position: absolute;
   display: grid;
-  right: 0;
   grid-template-columns: repeat(2, 1fr); /* 2 columns */
   grid-template-rows: repeat(3, auto); /* 3 rows */
-
   align-items: center;
-  width: 50vh; /* Center images vertically within their cells */
+  width: 100%;
   height: 85vh; /* Full height of the viewport */
   justify-items: left; /* Align images to the right of each cell */
   align-items: right;
-  margin-right: 200px;
 }
 
 .image-grid img {
@@ -45,26 +110,21 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 600px;
-  height: 150px;
+  max-width: 400px;
+  height: 70px;
+  padding-inline: 1.5rem;
   background-color: #ff2575;
   color: #ffffff;
-  font-size: 70px;
+  font-size: 1.5rem;
   font-weight: bold;
-  border-radius: 50px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 25px;
   text-align: center;
-  font-family: "Poppins", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
   cursor: pointer;
   transition: transform 0.5s, box-shadow 0.2s;
-  margin-top: 650px;
-  margin-left: 100px;
 }
 
 .subscribe-box:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 .subscribe-link {
@@ -72,14 +132,80 @@ body {
   color: #9b1f53;
 }
 
-/* Optional: For responsiveness, you can tweak the layout on smaller screens */
-@media (max-width: 768px) {
+.btns {
+  gap: 2rem;
+}
+
+.btns a {
+  width: 100%;
+}
+
+@media (max-width: 1536px) {
+  .balance p {
+    font-weight: bold;
+    font-size: 3.5rem;
+    margin: 0;
+  }
+
+  .smaller-box {
+    border-radius: 15px;
+    padding: 1rem;
+  }
+
+  .smaller-box h2 {
+    font-size: 1rem;
+    font-weight: 300;
+    margin: 0;
+  }
+
+  .smaller-box p {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin: 0;
+    margin: 0;
+  }
+
+  .subscribe-box {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 1280px) {
+  .main-content {
+    padding-inline: 6rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    padding-top: 6rem;
+    padding-inline: 4rem;
+    grid-template-columns: 1fr;
+    gap: 0%;
+  }
+
   .image-grid {
-    grid-template-columns: 1fr; /* Single column on small screens */
-    grid-template-rows: repeat(6, auto); /* Adjust rows for single column */
+    justify-content: center;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 200px);
+  }
+
+  .image-grid img {
+    width: 140px; /* Adjust image size for smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding-inline: 2rem;
   }
   .image-grid img {
-    width: 60px; /* Adjust image size for smaller screens */
-    height: 60px; /* Keep it round by matching height and width */
+    width: 100px; /* Adjust image size for smaller screens */
+  }
+}
+
+@media (max-width: 640px) {
+  .main-content {
+    padding-inline: 1rem;
   }
 }
