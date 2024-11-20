@@ -36,12 +36,14 @@
             type="email"
             name="email"
             placeholder="Email Address"
+            id="login-email"
             required
           />
           <input
             type="password"
             name="password"
             placeholder="Password"
+            id="login-password"
             required
           />
           <p class="terms">
@@ -51,14 +53,8 @@
             >
           </p>
           <div class="buttons">
-            <button type="submit" class="login">Log In</button>
-            <button
-              type="button"
-              class="signup"
-              onclick="showForm('signup-form')"
-            >
-              Sign Up
-            </button>
+            <button type="button" class="login" id="login">Log In</button>
+            <button type="button" class="signup">Sign Up</button>
           </div>
         </form>
       </div>
@@ -138,20 +134,8 @@
             <span class="highlight">Terms and Privacy Policy</span>
           </p>
           <div class="buttons">
-            <button
-              type="button"
-              class="next"
-              onclick="showForm('payment-method')"
-            >
-              Next
-            </button>
-            <button
-              type="button"
-              class="cancel"
-              onclick="showForm('login-form')"
-            >
-              Cancel
-            </button>
+            <button type="button" class="next">Next</button>
+            <button type="button" class="cancel">Cancel</button>
           </div>
         </form>
       </div>
@@ -237,7 +221,7 @@
       </div>
     </section>
 
-    <script src="/client/js/script.js"></script>
+    <script src="/client/js/index.js"></script>
     <script src="/client/js/nav.js"></script>
   </body>
 </html>
