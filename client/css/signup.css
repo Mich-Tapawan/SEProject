@@ -47,7 +47,7 @@ body {
   gap: 2rem;
 }
 
-#signup-form input,
+input,
 select {
   width: 100%;
   padding: 1.2rem;
@@ -93,4 +93,47 @@ select {
 #signup-form span {
   color: var(--primary);
   cursor: pointer;
+}
+
+.grid-three-col {
+  padding-top: 8rem;
+  display: grid;
+  height: 90vh;
+  grid-template-columns: 1fr 1fr;
+  gap: 10%;
+}
+
+.grid-three-col h5 {
+  font-size: 3rem;
+  font-weight: 200;
+  margin: 0 0 2rem 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+}
+
+button.register {
+  width: 100%;
+  padding: 1.2rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.bank-register {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+button.mobile-register {
+  background-color: var(--secondary);
+  color: #fff;
+}
+button:hover {
+  filter: brightness(1.2);
 }
