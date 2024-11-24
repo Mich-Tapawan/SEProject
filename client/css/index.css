@@ -161,8 +161,7 @@ h4 {
 }
 
 #signup-form h4 {
-  text-align: left; /* Align only the Sign-Up heading to the left */
-  font-size: 45px;
+  font-size: 2rem;
   font-weight: lighter;
   margin: 0; /* Remove margins */
   padding: 0 155px; /* Add optional padding */
@@ -188,148 +187,6 @@ h4 {
   height: 30px;
   border-radius: 5px;
   margin-bottom: 20px;
-}
-
-#signup-form input[name="first_name"] {
-  display: block;
-  width: 70%; /* Ensure consistent input width */
-  max-width: 440px; /* Limit input size */
-  height: 30px;
-  margin-left: 155px; /* Align with the heading */
-  border-radius: 5px;
-  margin-bottom: 30px; /* Add spacing below the field */
-  margin-top: 60px;
-}
-
-#signup-form input[name="last_name"] {
-  display: block;
-  width: 70%;
-  max-width: 440px;
-  height: 30px;
-  margin-left: 155px; /* Align with the first name field */
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-#signup-form select[name="province"] {
-  display: block;
-  width: 100%;
-  max-width: 120px;
-  height: 40px;
-  margin-left: 15px; /* Align with the first name field */
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-#signup-form select[name="city"] {
-  display: block;
-  width: 120%;
-  max-width: 120px;
-  height: 50px;
-  margin-left: 40px; /* Align with the first name field */
-  border-radius: 5px;
-  margin-bottom: 20px;
-  color: grey;
-}
-
-#signup-form select[name="province"] {
-  display: block;
-  width: 120%;
-  max-width: 120px;
-  height: 50px;
-  margin-left: 155px; /* Align with the first name field */
-  border-radius: 5px;
-  margin-bottom: 20px;
-  color: grey;
-}
-
-#signup-form input[name="zip_code"] {
-  display: block;
-  width: 70%;
-  max-width: 120px;
-  height: 30px;
-  margin-left: 40px; /* Align with the first name field */
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-.form-group-row {
-  display: flex; /* Arrange elements in a row */
-  justify-content: flex-start; /* Start elements from the left */
-  gap: -200px; /* Add spacing between fields */
-  margin-left: 0px; /* Ensure it aligns with the Province field */
-}
-
-#signup-form input[name="address"] {
-  display: block;
-  width: 70%;
-  max-width: 440px;
-  height: 30px;
-  margin-left: 155px; /* Align with the first name field */
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-#signup-form .terms {
-  display: block;
-  width: 70%; /* Ensure consistent input width */
-  max-width: 500px; /* Limit input size */
-  height: 30px;
-  margin-left: 138px; /* Align with the heading */
-  border-radius: 5px;
-  margin-bottom: 30px; /* Add spacing below the field */
-  margin-top: 0px;
-}
-
-#signup-form input[name="email"] {
-  display: block;
-  width: 70%;
-  max-width: 440px;
-  height: 30px;
-  margin-right: 300px; /* Align with the first name field */
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-#signup-form input[name="password"] {
-  display: block;
-  width: 70%;
-  max-width: 440px;
-  height: 30px;
-  margin-right: 300px; /* Align with the first name field */
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-#signup-form input[name="contact_no"] {
-  display: block;
-  width: 70%;
-  max-width: 440px;
-  height: 30px;
-  margin-right: 300px; /* Align with the first name field */
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-#signup-form input[name="email"] {
-  position: absolute;
-  top: 244px;
-  left: 720px; /* Align with first name */
-  width: 440px;
-}
-
-#signup-form input[name="password"] {
-  position: absolute;
-  top: 324px;
-  left: 720px; /* Align with last name */
-  width: 440px;
-}
-
-#signup-form input[name="contact_no"] {
-  position: absolute;
-  top: 404px;
-  left: 720px; /* Align with zip code */
-  width: 440px;
 }
 
 #signup-form input,
@@ -362,14 +219,6 @@ select {
   color: #fff;
 }
 
-#signup-form .buttons {
-  display: flex;
-  justify-content: flex-end; /* Align buttons to the right */
-  gap: 40px;
-  width: 100%; /* Ensure it takes up the full width */
-  margin-left: -1015px; /* Adjust this value to align with Terms */
-}
-
 #signup-form .buttons button {
   background-color: #0d0d1b; /* Set background color */
   color: #ff2575; /* Set text color */
@@ -389,13 +238,6 @@ select {
   background-color: #ff2575; /* Change background color to pink */
   color: #fff; /* Change text color to white */
   border-color: #ff2575; /* Keep the pink border color on hover */
-}
-
-/* Optional: Specific styles for Cancel button */
-#signup-form .buttons .cancel {
-  background-color: #0d0d1b; /* Same background for cancel */
-  color: #ff2575; /* Same text color for cancel */
-  border: 2px solid #ff2575; /* Same border color for cancel */
 }
 
 #signup-form .buttons .cancel:hover {
