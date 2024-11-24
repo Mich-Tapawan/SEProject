@@ -8,6 +8,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  const signupForm = document.getElementById("signup-form");
+  const loginForm = document.getElementById("login-form");
+  document.querySelector("#signup").addEventListener("click", () => {
+    event.preventDefault();
+
+    signupForm.style.display = "block";
+    loginForm.style.display = "none";
+  });
+
+  document.querySelector("#cancel").addEventListener("click", () => {
+    signupForm.style.display = "none";
+    loginForm.style.display = "flex";
+  });
+
+  document.querySelector("#next").addEventListener("click", () => {});
+
   // function showForm(formId) {
   //   document
   //     .querySelectorAll("section")

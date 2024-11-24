@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const burger = document.getElementById("burger");
   const navList = document.getElementById("nav-list");
+  const notif = document.getElementById("bell");
 
   burger.addEventListener("click", () => {
     navList.style.display = navList.style.display == "none" ? "flex" : "none";
@@ -12,5 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (innerWidth >= 1024) {
       navList.style.display = "flex";
     }
+  });
+
+  notif.addEventListener("click", () => {
+    window.location.href = "/client/pages/notification.html";
   });
 });
