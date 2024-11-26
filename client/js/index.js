@@ -2,6 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginEmail = document.getElementById("login-email");
   const loginPassword = document.getElementById("login-password");
 
+  document.querySelector("#signup").addEventListener("click", () => {
+    event.preventDefault();
+    window.location.href = "/client/pages/signup.html";
+  });
+
   document.querySelector("#login").addEventListener("click", () => {
     event.preventDefault();
     if (loginEmail.value == "" && loginPassword.value == "") {
@@ -9,13 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     } else {
       logIn(loginEmail.value, loginPassword.value);
-      console.log("clicked");
     }
-  });
-
-  document.querySelector("#signup").addEventListener("click", () => {
-    event.preventDefault();
-    window.location.href = "/client/pages/signup.html";
   });
 
   async function logIn(email, password) {

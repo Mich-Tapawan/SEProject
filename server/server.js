@@ -85,6 +85,8 @@ app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 address: user.address,
                 email: user.email,
                 contact: user.contact,
+                balance: user.balance,
+                monthlyLimit: user.monthlyLimit,
             },
         });
         return;
@@ -100,11 +102,19 @@ app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { firstName, lastName, province, city, zip, address, email, password, contact, } = req.body;
 }));
 // Wallets Handler
-app.post("/getWallets", (Request, Response) => { });
-app.post("/addWallet", (Request, Response) => { });
-app.post("/removeWallet", (Request, Response) => { });
-//Subscriptions
-app.post("/getSubscriptions", (Request, Response) => { });
-app.post("/addSubscription", (Request, Response) => { });
-app.post("/removeSubscription", (Request, Response) => { });
+app.post("/getWallet", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userID } = req.body;
+    if (!userID) {
+        res.status(400).json({ message: "User ID is missing" });
+        return;
+    }
+    try {
+        const walletsCollection = client.db("MMM").collection("walllets");
+    }
+    catch (error) {
+        console.error("Error accessing wallet:", error);
+        res.status(500).json({ message: "Internal server error" });
+        return;
+    }
+}));
 app.listen(5000, () => console.log("Server running at PORT 5000"));
