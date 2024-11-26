@@ -25,7 +25,6 @@
         <ul class="nav-list" id="nav-list">
           <li><a href="/client/pages/home.html">Home</a></li>
           <li><a href="/client/pages/wallet.html">Wallets</a></li>
-          <li><a href="/client/pages/analytics.html">Analytics</a></li>
           <li><a href="/client/pages/account.html">Account</a></li>
           <li class="notif-text"><a href="">Notification</a></li>
           <li>
@@ -40,6 +39,56 @@
       </div>
       <div class="nav-gradient"></div>
     </nav>
+    <div class="main-content">
+      <div class="grid-container">
+        <div>
+          <h1>Your Wallet</h1>
+          <span id="current-balance">P00000</span>
+          <div class="box">
+            <h2>MONTHLY LIMIT</h2>
+            <img
+              src="/client/assets/walletIcons/edit.png"
+              alt="edit"
+              id="edit"
+            />
+            <p id="monthly-limit">P0000</p>
+          </div>
+          <div class="box">
+            <h2>BUDGET USAGE</h2>
+            <div id="bar"><span></span></div>
+            <p id="budget-percentage">00%</p>
+          </div>
+          <div class="wallet-buttons">
+            <div class="wallet-btn" id="deposit">
+              <img
+                src="/client/assets/walletIcons/deposit.png"
+                alt="deposit-icon"
+              />
+              <h3>DEPOSIT</h3>
+            </div>
+            <div class="wallet-btn" id="transfer">
+              <img
+                src="/client/assets/walletIcons/transfer.png"
+                alt="transfer-icon"
+              />
+              <h3>TRANSFER</h3>
+            </div>
+            <div class="wallet-btn" id="remove">
+              <img
+                src="/client/assets/walletIcons/remove.png"
+                alt="remove-icon"
+              />
+              <h3>REMOVE</h3>
+            </div>
+          </div>
+        </div>
+        <ul id="registered-wallets">
+          <li id="addWallet">
+            <img src="/client/assets/walletIcons/add.png" alt="add" />
+          </li>
+        </ul>
+      </div>
+    </div>
     <script src="/client/js/nav.js"></script>
     <script src="/client/js/wallet.js"></script>
   </body>
