@@ -185,9 +185,10 @@ body {
   }
 
   .image-grid {
-    justify-content: center;
+    justify-items: center;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 200px);
+    height: 100%;
   }
 
   .image-grid img {
@@ -199,8 +200,9 @@ body {
   .main-content {
     padding-inline: 2rem;
   }
+
   .image-grid img {
-    width: 100px; /* Adjust image size for smaller screens */
+    width: 120px; /* Adjust image size for smaller screens */
   }
 }
 
