@@ -22,11 +22,12 @@
           </div>
           <span>MMM Inc.</span>
         </div>
+        <p style="color: white; cursor: pointer; padding-inline: 2rem;" id="nav-cancel">Cancel</p>
       </div>
       <div class="nav-gradient"></div>
     </nav>
     <div class="main-content">
-      <section id="signup-form" style="display: none;">
+      <section id="signup-form" style="display: block;">
       <h4>Sign Up</h4>
       <div class="grid-container">
 
@@ -46,26 +47,17 @@
             />
 
           <div class="form-group-row">
-            <select name="province" required>
-              <option value="">Province</option>
-              <option value="">Cavite</option>
+            <select name="country" id="country" required>
+              <option selected>Country</option>
             </select>
-            <select name="city" required>
-              <option value="">City</option>
-              <option value="">Bacoor</option>
-              <option value="">Cavite City</option>
-              <option value="">Dasmariñas</option>
-              <option value="">Imus</option>
-              <option value="">Tagaytay</option>
-              <option value="">General Trias</option>
-              <option value="">Trece Martires</option>
+            <select name="state" id="state" required>
+              <option selected>State</option>
             </select>
-            <input
-              type="text"
-              name="zip_code"
-              placeholder="Zip Code"
-              required
-            />
+
+            <select name="city" id="city" required>
+              <option selected>City</option>
+            </select>
+
           </div>
             <input
               type="text"
@@ -73,8 +65,7 @@
               placeholder="House No. / Street / Barangay"
               required
             />
-        </div>
-
+</div>
      <div>
             <input
               type="email"
@@ -95,8 +86,7 @@
               required
             />
     </div>
-      </div>
-
+</div>
         <p class="terms">
         By signing up, you are agreeing to our
         <span class="highlight">Terms and Privacy Policy</span>
@@ -108,7 +98,7 @@
         </form>
       </section>
 
-      <section id="payment-method" style="display: block">
+      <section id="payment-method" style="display: none">
         <div class="grid-three-col">
             <!-- Bank Card Section -->
             <div class="bank-card">
