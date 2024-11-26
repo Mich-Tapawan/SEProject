@@ -6,8 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
     if (loginEmail.value == "" && loginPassword.value == "") {
       //Dito kayo mag edit ng alert code
+      return;
     } else {
-      window.location.href = "/client/pages/home.html";
+      logIn(loginEmail.value, loginPassword.value);
+      console.log("clicked");
     }
   });
 
@@ -15,4 +17,22 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
     window.location.href = "/client/pages/signup.html";
   });
+
+  async function logIn(email, password) {
+    try {
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: password }),
+      });
+      const data = await response.json();
+      localStorage.setItem("userData", JSON.stringify(data));
+
+      if (response.ok) {
+        window.location.href = "/client/pages/home.html";
+      }
+    } catch (error) {
+      console.error("Error logging in", error);
+    }
+  }
 });

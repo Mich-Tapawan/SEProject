@@ -16,9 +16,6 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const mongodb_1 = require("mongodb");
 require("dotenv/config");
-const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
 const uri = process.env.MONGODB_URI;
 if (!uri) {
     throw new Error("Error loading URI");
@@ -41,12 +38,15 @@ function run() {
             console.log("Pinged your deployment. You successfully connected to MongoDB!");
         }
         catch (error) {
-            console.log("Error connecting to mongoDB");
-            yield client.close();
+            console.error("Error connecting to mongoDB", error);
         }
     });
 }
 run().catch(console.dir);
+const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
+app.use(express_1.default.json());
+// Services API endpoints
 const netflixRoutes = require("./services/netflix");
 const spotifyRoutes = require("./services/spotify");
 const youtubeRoutes = require("./services/youtube");
@@ -59,4 +59,52 @@ app.use("/service/youtube", youtubeRoutes);
 app.use("/service/prime", primeRoutes);
 app.use("/service/hbo", hboRoutes);
 app.use("/service/disney", disneyRoutes);
+// User Log In
+app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        res.status(400).json({ message: "Email ad password are required" });
+        return;
+    }
+    try {
+        const usersCollection = client.db("MMM").collection("users");
+        const user = yield usersCollection.findOne({ email, password });
+        if (!user) {
+            res.status(401).json({ message: "Invalid email or password" });
+            return;
+        }
+        res.status(200).json({
+            message: "Login successful",
+            user: {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                country: user.country,
+                state: user.state,
+                city: user.city,
+                address: user.address,
+                email: user.email,
+                contact: user.contact,
+            },
+        });
+        return;
+    }
+    catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).json({ message: "Internal server error" });
+        return;
+    }
+}));
+// User Sign Up
+app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { firstName, lastName, province, city, zip, address, email, password, contact, } = req.body;
+}));
+// Wallets Handler
+app.post("/getWallets", (Request, Response) => { });
+app.post("/addWallet", (Request, Response) => { });
+app.post("/removeWallet", (Request, Response) => { });
+//Subscriptions
+app.post("/getSubscriptions", (Request, Response) => { });
+app.post("/addSubscription", (Request, Response) => { });
+app.post("/removeSubscription", (Request, Response) => { });
 app.listen(5000, () => console.log("Server running at PORT 5000"));
