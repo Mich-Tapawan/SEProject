@@ -31,50 +31,59 @@
       <h4>Sign Up</h4>
       <div class="grid-container">
 
-        <div>
-            <form action="#" method="POST">
-            <input
+      <div>
+          <input
               type="text"
               name="first_name"
-              placeholder="First Name"
               id="first-name"
+              class="user-info"
+              placeholder="First Name"
               required
-            />
-            <input
+          />
+          <input
               type="text"
               name="last_name"
-              placeholder="Last Name"
               id="last-name"
+              class="user-info"
+              placeholder="Last Name"
               required
-            />
-            <input
+          />
+          <input
               type="text"
               name="address"
+              id="address"
+              class="user-info"
               placeholder="House No. / Street / Barangay"
               required
-            />
-</div>
+          />
+      </div>
      <div>
             <input
               type="email"
               name="email"
+              id="email"
+              class="user-info"
               placeholder="Email Address"
               required
             />
             <input
               type="password"
               name="password"
+              id="password"
+              class="user-info"
               placeholder="Password"
               required
             />
             <input
-              type="text"
+              type="number"
               name="contact_no"
+              id="contact"
+              class="user-info"
               placeholder="Contact No."
               required
             />
     </div>
-</div>
+    </div>
         <p class="terms">
         By signing up, you are agreeing to our
         <span class="highlight">Terms and Privacy Policy</span>
@@ -94,8 +103,9 @@
             <form>
               <label for="card_number">Card Number</label>
               <input
-                type="text"
-                id="card_number"
+                type="number"
+                id="card-number"
+                class="bank-info"
                 name="card_number"
                 placeholder="Enter your card number"
               />
@@ -106,7 +116,8 @@
                   <input
                     type="month"
                     min="2025-01" value=""
-                    id="expiry_date"
+                    id="expiry-date"
+                    class="bank-info"
                     name="expiry_date"
                     placeholder="MM / YY"
                   />
@@ -116,6 +127,7 @@
                   <input
                     type="text"
                     id="cvv"
+                    class="bank-info"
                     name="cvv"
                     placeholder="Enter CVV"
                   />
@@ -125,12 +137,13 @@
               <label for="card_name">Name on Card</label>
               <input
                 type="text"
-                id="card_name"
+                id="card-name"
+                class="bank-info"
                 name="card_name"
                 placeholder="Enter name on card"
               />
 
-              <button type="button" class="register bank-register">
+              <button type="button" class="register bank-register" id="bank-register">
                 REGISTER
               </button>
             </form>
@@ -143,7 +156,7 @@
               <label for="mobile_number">Contact Number</label>
               <input
                 type="mobile"
-                id="mobile_number"
+                id="mobile-number"
                 name="mobile_number"
                 placeholder="Enter your mobile number"
               />
@@ -156,7 +169,7 @@
                 <option value="DITO">DITO</option>
               </select>
 
-              <button type="button" class="register mobile-register">
+              <button type="button" class="register mobile-register" id="mobile-register">
                 REGISTER
               </button>
             </form>

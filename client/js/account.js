@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
         subscriptionsSection.style.display = "none";
         settingsSection.style.display = "block";
       } else if (sec === "logout") {
+        localStorage.setItem("userData", "");
         window.location.href = "/client/index.html";
       }
     };
