@@ -22,7 +22,7 @@
           </div>
           <span>MMM Inc.</span>
         </div>
-        <p style="color: white; cursor: pointer; padding-inline: 2rem;" id="nav-cancel">Cancel</p>
+        <p style="color: white; cursor: pointer; padding-inline: 2rem; display: none;" id="nav-cancel">Cancel</p>
       </div>
       <div class="nav-gradient"></div>
     </nav>
@@ -37,28 +37,16 @@
               type="text"
               name="first_name"
               placeholder="First Name"
+              id="first-name"
               required
             />
             <input
               type="text"
               name="last_name"
               placeholder="Last Name"
+              id="last-name"
               required
             />
-
-          <div class="form-group-row">
-            <select name="country" id="country" required>
-              <option selected>Country</option>
-            </select>
-            <select name="state" id="state" required>
-              <option selected>State</option>
-            </select>
-
-            <select name="city" id="city" required>
-              <option selected>City</option>
-            </select>
-
-          </div>
             <input
               type="text"
               name="address"
