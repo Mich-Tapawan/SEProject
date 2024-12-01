@@ -22,68 +22,77 @@
           </div>
           <span>MMM Inc.</span>
         </div>
-        <p style="color: white; cursor: pointer; padding-inline: 2rem; display: none;" id="nav-cancel">Cancel</p>
+        <p
+          style="
+            color: white;
+            cursor: pointer;
+            padding-inline: 2rem;
+            display: none;
+          "
+          id="nav-cancel"
+        >
+          Cancel
+        </p>
       </div>
       <div class="nav-gradient"></div>
     </nav>
     <div class="main-content">
-      <section id="signup-form" style="display: block;">
-      <h4>Sign Up</h4>
-      <div class="grid-container">
-
-      <div>
-          <input
+      <section id="signup-form" style="display: block">
+        <h4>Sign Up</h4>
+        <div class="grid-container">
+          <div>
+            <input
               type="text"
               name="first_name"
               id="first-name"
               class="user-info"
               placeholder="First Name"
               required
-          />
-          <input
+            />
+            <input
               type="text"
               name="last_name"
               id="last-name"
               class="user-info"
               placeholder="Last Name"
               required
-          />
-          <div class="form-group-row">
+            />
+            <div class="form-group-row">
+              <input
+                type="text"
+                name="Country"
+                id="country"
+                class="user-info"
+                placeholder="Country"
+                required
+              />
+              <input
+                type="text"
+                name="State"
+                id="state"
+                class="user-info"
+                placeholder="State"
+                required
+              />
+              <input
+                type="text"
+                name="City"
+                id="city"
+                class="user-info"
+                placeholder="City"
+                required
+              />
+            </div>
             <input
-              type="text"
-              name="Country"
-              id="country"
-              class="user-info"
-              placeholder="Country"
-              required
-            />
-              <input
-              type="text"
-              name="State"
-              id="state"
-              class="user-info"
-              placeholder="State"
-              required
-            />
-              <input
-              type="text"
-              name="City"
-              id="city"
-              class="user-info"
-              placeholder="City"
-              required
-            />
-          </div>
-          <input
               type="text"
               name="address"
               id="address"
               class="user-info"
               placeholder="House No. / Street / Barangay"
               required
-          />
-      </div>
-     <div>
+            />
+          </div>
+          <div>
             <input
               type="email"
               name="email"
@@ -108,23 +117,22 @@
               placeholder="Contact No."
               required
             />
-    </div>
-    </div>
+          </div>
+        </div>
         <p class="terms">
-        By signing up, you are agreeing to our
-        <span class="highlight">Terms and Privacy Policy</span>
+          By signing up, you are agreeing to our
+          <span class="highlight">Terms and Privacy Policy</span>
         </p>
         <div class="buttons">
-            <button type="button" class="next" id="next">Next</button>
-            <button type="button" class="cancel" id="cancel">Cancel</button>
-          </div>
-        </form>
+          <button type="button" class="next" id="next">Next</button>
+          <button type="button" class="cancel" id="cancel">Cancel</button>
+        </div>
       </section>
 
       <section id="payment-method" style="display: none">
         <div class="grid-three-col">
-            <!-- Bank Card Section -->
-            <div class="bank-card">
+          <!-- Bank Card Section -->
+          <div class="bank-card">
             <h5>Bank Card</h5>
             <form>
               <label for="card_number">Card Number</label>
@@ -141,7 +149,8 @@
                   <label for="expiry_date">Expiry Date</label>
                   <input
                     type="month"
-                    min="2025-01" value=""
+                    min="2025-01"
+                    value=""
                     id="expiry-date"
                     class="bank-info"
                     name="expiry_date"
@@ -169,14 +178,18 @@
                 placeholder="Enter name on card"
               />
 
-              <button type="button" class="register bank-register" id="bank-register">
+              <button
+                type="button"
+                class="register bank-register"
+                id="bank-register"
+              >
                 REGISTER
               </button>
             </form>
-            </div>
+          </div>
 
-            <!-- Mobile Payment Section -->
-            <div class="mobile-payment">
+          <!-- Mobile Payment Section -->
+          <div class="mobile-payment">
             <h5>Mobile</h5>
             <form>
               <label for="mobile_number">Contact Number</label>
@@ -195,13 +208,17 @@
                 <option value="DITO">DITO</option>
               </select>
 
-              <button type="button" class="register mobile-register" id="mobile-register">
+              <button
+                type="button"
+                class="register mobile-register"
+                id="mobile-register"
+              >
                 REGISTER
               </button>
             </form>
-            </div>
-        </div>    
-    </section>
+          </div>
+        </div>
+      </section>
     </div>
     <script src="/client/js/signup.js"></script>
     <script src="/client/js/nav.js"></script>

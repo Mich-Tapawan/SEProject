@@ -118,11 +118,13 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(data);
       localStorage.setItem("userData", JSON.stringify(data));
 
-      if (response.ok) {
-        window.location.href = "/client/pages/home.html";
+      if (!response.ok) {
+        console.error("Error signing up", error);
+        return;
       }
+      window.location.href = "/client/pages/home.html";
     } catch (error) {
-      console.error("Error sending user data");
+      console.error("Error sending user data:", error);
     }
   }
 });

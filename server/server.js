@@ -107,91 +107,115 @@ app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(400).json({ message: "information missing or null" });
         return;
     }
-    // Checks and Cancels signing up if user already exist
-    const usersCollection = client.db("MMM").collection("users");
-    let user = yield usersCollection.findOne({
-        email: userInfo.email,
-    });
-    if (user) {
-        console.log("This account already exists");
-        res.status(400).json({ message: "This account already exists" });
-        return;
-    }
-    // Adds user document to the users collection
-    usersCollection.insertOne({
-        email: userInfo.email,
-        password: userInfo.password,
-        firstName: userInfo.firstName,
-        lastName: userInfo.lastName,
-        contact: userInfo.contact,
-        address: userInfo.address,
-        country: userInfo.country,
-        state: userInfo.state,
-        city: userInfo.city,
-        balance: "0",
-        monthlyLimit: "0",
-    });
-    // Register wallet for newly signed user
-    const walletsCollection = client.db("MMM").collection("wallets");
-    user = yield usersCollection.findOne({
-        email: userInfo.email,
-        password: userInfo.password,
-    });
-    if (!user) {
-        console.log("No user found");
-        res.status(400).json("No user found");
-        return;
-    }
-    if (method == "card") {
-        walletsCollection.insertOne({
-            type: "card",
-            userID: user === null || user === void 0 ? void 0 : user._id,
-            securityCode: paymentInfo.securityCode,
-            name: paymentInfo.cardName,
-            cardNumber: paymentInfo.cardNumber,
-            expiryDate: paymentInfo.expiryDate,
+    try {
+        // Checks and Cancels signing up if user already exist
+        const usersCollection = client.db("MMM").collection("users");
+        let user = yield usersCollection.findOne({
+            email: userInfo.email,
+        });
+        if (user) {
+            console.log("This account already exists");
+            res.status(400).json({ message: "This account already exists" });
+            return;
+        }
+        // Adds user document to the users collection
+        usersCollection.insertOne({
+            email: userInfo.email,
+            password: userInfo.password,
+            firstName: userInfo.firstName,
+            lastName: userInfo.lastName,
+            contact: userInfo.contact,
+            address: userInfo.address,
+            country: userInfo.country,
+            state: userInfo.state,
+            city: userInfo.city,
+            balance: "0",
+            monthlyLimit: "0",
+        });
+        // Register wallet for newly signed user
+        const walletsCollection = client.db("MMM").collection("wallets");
+        user = yield usersCollection.findOne({
+            email: userInfo.email,
+        });
+        if (method == "card") {
+            walletsCollection.insertOne({
+                type: "card",
+                userID: user === null || user === void 0 ? void 0 : user._id,
+                securityCode: paymentInfo.securityCode,
+                name: paymentInfo.cardName,
+                cardNumber: paymentInfo.cardNumber,
+                expiryDate: paymentInfo.expiryDate,
+            });
+        }
+        else if (method == "mobile") {
+            walletsCollection.insertOne({
+                type: "mobile",
+                userID: user === null || user === void 0 ? void 0 : user._id,
+                number: paymentInfo.mobileNumber,
+                carrier: paymentInfo.simCarrier,
+            });
+        }
+        else {
+            console.log("invalid method");
+            res.status(400).json({ message: "invalid method" });
+            return;
+        }
+        //Send validated and registered data back
+        res.status(200).json({
+            message: "Login successful",
+            user: {
+                _id: user === null || user === void 0 ? void 0 : user._id,
+                firstName: user === null || user === void 0 ? void 0 : user.firstName,
+                lastName: user === null || user === void 0 ? void 0 : user.lastName,
+                country: user === null || user === void 0 ? void 0 : user.country,
+                state: user === null || user === void 0 ? void 0 : user.state,
+                city: user === null || user === void 0 ? void 0 : user.city,
+                address: user === null || user === void 0 ? void 0 : user.address,
+                email: user === null || user === void 0 ? void 0 : user.email,
+                contact: user === null || user === void 0 ? void 0 : user.contact,
+                balance: user === null || user === void 0 ? void 0 : user.balance,
+                monthlyLimit: user === null || user === void 0 ? void 0 : user.monthlyLimit,
+            },
         });
     }
-    else if (method == "mobile") {
-        walletsCollection.insertOne({
-            type: "mobile",
-            userID: user === null || user === void 0 ? void 0 : user._id,
-            number: paymentInfo.mobileNumber,
-            carrier: paymentInfo.simCarrier,
-        });
-    }
-    else {
-        console.log("invalid method");
-        res.status(400).json({ message: "invalid method" });
+    catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).json({ message: "Internal server error" });
         return;
     }
-    //Send validated and registered data back
-    res.status(200).json({
-        message: "Login successful",
-        user: {
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            country: user.country,
-            state: user.state,
-            city: user.city,
-            address: user.address,
-            email: user.email,
-            contact: user.contact,
-            balance: user.balance,
-            monthlyLimit: user.monthlyLimit,
-        },
-    });
 }));
 // Wallets Handler
-app.post("/getWallet", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userID } = req.body;
+app.get("/getWallets/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userID = req.params.id;
     if (!userID) {
+        console.log("User ID is missing");
         res.status(400).json({ message: "User ID is missing" });
         return;
     }
+    // Validate the userID format
+    if (!mongodb_1.ObjectId.isValid(userID)) {
+        console.log("Invalid User ID format");
+        res.status(400).json({ message: "Invalid User ID format" });
+        return;
+    }
     try {
-        const walletsCollection = client.db("MMM").collection("walllets");
+        //Conver userID to MongoDB ObjectId
+        const objectId = new mongodb_1.ObjectId(userID);
+        const walletsCollection = client.db("MMM").collection("wallets");
+        const wallets = yield walletsCollection
+            .find({ userID: objectId })
+            .toArray();
+        console.log(wallets);
+        if (wallets.length < 1) {
+            console.log("User has no registered wallet");
+            res.status(400).json({ message: "User has no registered wallet" });
+            return;
+        }
+        else {
+            res.status(200).json({
+                wallets: wallets,
+            });
+        }
     }
     catch (error) {
         console.error("Error accessing wallet:", error);

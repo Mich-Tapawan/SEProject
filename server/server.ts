@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import "dotenv/config";
 
 const uri = process.env.MONGODB_URI;
@@ -107,103 +107,127 @@ app.post("/signup", async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  // Checks and Cancels signing up if user already exist
-  const usersCollection = client.db("MMM").collection("users");
-  let user = await usersCollection.findOne({
-    email: userInfo.email,
-  });
-
-  if (user) {
-    console.log("This account already exists");
-    res.status(400).json({ message: "This account already exists" });
-    return;
-  }
-
-  // Adds user document to the users collection
-  usersCollection.insertOne({
-    email: userInfo.email,
-    password: userInfo.password,
-    firstName: userInfo.firstName,
-    lastName: userInfo.lastName,
-    contact: userInfo.contact,
-    address: userInfo.address,
-    country: userInfo.country,
-    state: userInfo.state,
-    city: userInfo.city,
-    balance: "0",
-    monthlyLimit: "0",
-  });
-
-  // Register wallet for newly signed user
-  const walletsCollection = client.db("MMM").collection("wallets");
-  user = await usersCollection.findOne({
-    email: userInfo.email,
-    password: userInfo.password,
-  });
-
-  if (!user) {
-    console.log("No user found");
-    res.status(400).json("No user found");
-    return;
-  }
-
-  if (method == "card") {
-    walletsCollection.insertOne({
-      type: "card",
-      userID: user?._id,
-      securityCode: paymentInfo.securityCode,
-      name: paymentInfo.cardName,
-      cardNumber: paymentInfo.cardNumber,
-      expiryDate: paymentInfo.expiryDate,
-    });
-  } else if (method == "mobile") {
-    walletsCollection.insertOne({
-      type: "mobile",
-      userID: user?._id,
-      number: paymentInfo.mobileNumber,
-      carrier: paymentInfo.simCarrier,
-    });
-  } else {
-    console.log("invalid method");
-    res.status(400).json({ message: "invalid method" });
-    return;
-  }
-
-  //Send validated and registered data back
-  res.status(200).json({
-    message: "Login successful",
-    user: {
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      country: user.country,
-      state: user.state,
-      city: user.city,
-      address: user.address,
-      email: user.email,
-      contact: user.contact,
-      balance: user.balance,
-      monthlyLimit: user.monthlyLimit,
-    },
-  });
-});
-
-// Wallets Handler
-app.post("/getWallet", async (req: Request, res: Response): Promise<void> => {
-  const { userID } = req.body;
-
-  if (!userID) {
-    res.status(400).json({ message: "User ID is missing" });
-    return;
-  }
-
   try {
-    const walletsCollection = client.db("MMM").collection("walllets");
+    // Checks and Cancels signing up if user already exist
+    const usersCollection = client.db("MMM").collection("users");
+    let user = await usersCollection.findOne({
+      email: userInfo.email,
+    });
+
+    if (user) {
+      console.log("This account already exists");
+      res.status(400).json({ message: "This account already exists" });
+      return;
+    }
+
+    // Adds user document to the users collection
+    usersCollection.insertOne({
+      email: userInfo.email,
+      password: userInfo.password,
+      firstName: userInfo.firstName,
+      lastName: userInfo.lastName,
+      contact: userInfo.contact,
+      address: userInfo.address,
+      country: userInfo.country,
+      state: userInfo.state,
+      city: userInfo.city,
+      balance: "0",
+      monthlyLimit: "0",
+    });
+    // Register wallet for newly signed user
+    const walletsCollection = client.db("MMM").collection("wallets");
+    user = await usersCollection.findOne({
+      email: userInfo.email,
+    });
+
+    if (method == "card") {
+      walletsCollection.insertOne({
+        type: "card",
+        userID: user?._id,
+        securityCode: paymentInfo.securityCode,
+        name: paymentInfo.cardName,
+        cardNumber: paymentInfo.cardNumber,
+        expiryDate: paymentInfo.expiryDate,
+      });
+    } else if (method == "mobile") {
+      walletsCollection.insertOne({
+        type: "mobile",
+        userID: user?._id,
+        number: paymentInfo.mobileNumber,
+        carrier: paymentInfo.simCarrier,
+      });
+    } else {
+      console.log("invalid method");
+      res.status(400).json({ message: "invalid method" });
+      return;
+    }
+
+    //Send validated and registered data back
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        _id: user?._id,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        country: user?.country,
+        state: user?.state,
+        city: user?.city,
+        address: user?.address,
+        email: user?.email,
+        contact: user?.contact,
+        balance: user?.balance,
+        monthlyLimit: user?.monthlyLimit,
+      },
+    });
   } catch (error) {
-    console.error("Error accessing wallet:", error);
+    console.error("Error during login:", error);
     res.status(500).json({ message: "Internal server error" });
     return;
   }
 });
+
+// Wallets Handler
+app.get(
+  "/getWallets/:id",
+  async (req: Request, res: Response): Promise<void> => {
+    const userID = req.params.id;
+    if (!userID) {
+      console.log("User ID is missing");
+      res.status(400).json({ message: "User ID is missing" });
+      return;
+    }
+
+    // Validate the userID format
+    if (!ObjectId.isValid(userID)) {
+      console.log("Invalid User ID format");
+      res.status(400).json({ message: "Invalid User ID format" });
+      return;
+    }
+
+    try {
+      //Conver userID to MongoDB ObjectId
+      const objectId = new ObjectId(userID);
+
+      const walletsCollection = client.db("MMM").collection("wallets");
+      const wallets = await walletsCollection
+        .find({ userID: objectId })
+        .toArray();
+      console.log(wallets);
+      if (wallets.length < 1) {
+        console.log("User has no registered wallet");
+        res.status(400).json({ message: "User has no registered wallet" });
+        return;
+      } else {
+        res.status(200).json({
+          wallets: wallets,
+        });
+      }
+    } catch (error) {
+      console.error("Error accessing wallet:", error);
+      res.status(500).json({ message: "Internal server error" });
+      return;
+    }
+  }
+);
 
 app.listen(5000, () => console.log("Server running at PORT 5000"));
