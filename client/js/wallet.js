@@ -42,8 +42,48 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("No wallets found or invalid data format");
   }
 
+  // Add Wallet
+  const addWalletContainer = document.querySelector(".add-wallet-container");
+  const returnBtn = document.getElementById("return-btn");
+
+  const chooseType = document.querySelector(".choose-type");
+  const cardBtn = document.getElementById("card-btn");
+  const mobileBtn = document.getElementById("mobile-btn");
+
+  const cardForm = document.querySelector(".card-form");
+  const cardNumber = document.getElementById("card-number");
+  const securityCode = document.getElementById("security-code");
+  const cardName = document.getElementById("card-name");
+  const cardRegister = document.getElementById("card-register-btn");
+
+  const mobileForm = document.querySelector(".mobile-form");
+  const mobileNumber = document.getElementById("mobile-number");
+  const carrier = document.getElementById("carrier");
+  const mobileRegister = document.getElementById("mobile-register-btn");
+
   addWalletBtn.addEventListener("click", () => {
+    addWalletContainer.style.display = "flex";
+    chooseType.style.display = "flex";
+    cardForm.style.display = "none";
+    mobileForm.style.display = "none";
     addWallet();
+  });
+
+  returnBtn.addEventListener("click", () => {
+    addWalletContainer.style.display = "none";
+  });
+
+  cardBtn.addEventListener("click", () => {
+    console.log("click");
+    chooseType.style.display = "none";
+    cardForm.style.display = "flex";
+    mobileForm.style.display = "none";
+  });
+
+  mobileBtn.addEventListener("click", () => {
+    chooseType.style.display = "none";
+    cardForm.style.display = "none";
+    mobileForm.style.display = "flex";
   });
 
   async function loadWallets(id) {

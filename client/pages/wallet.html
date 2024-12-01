@@ -88,6 +88,45 @@
           </li>
         </ul>
       </div>
+      <div class="add-wallet-container">
+        <img src="/client/assets/return-btn.png" alt="return" id="return-btn" />
+        <div class="choose-type">
+          <button id="card-btn">CARD</button>
+          <button id="mobile-btn">MOBILE</button>
+        </div>
+        <div class="card-form">
+          <input
+            type="text"
+            name="Card number"
+            id="card-number"
+            placeholder="Enter card number"
+          />
+          <input type="date" name="Expiry Date" id="expiry-date" />
+          <input
+            type="text"
+            name="Security Code"
+            id="security-code"
+            placeholder="Enter CVV"
+          />
+          <input
+            type="text"
+            name="Card Name"
+            id="card-name"
+            placeholder="Enter name on card"
+          />
+          <button id="card-register-btn">REGISTER</button>
+        </div>
+        <div class="mobile-form">
+          <input type="number" name="Contact" id="mobile-number" />
+          <select id="carrier" name="carrier">
+            <option value="SMART">SMART</option>
+            <option value="GLOBE">GLOBE</option>
+            <option value="SUN">SUN</option>
+            <option value="DITO">DITO</option>
+          </select>
+          <button id="mobile-register-btn">REGISTER</button>
+        </div>
+      </div>
     </div>
     <script src="/client/js/nav.js"></script>
     <script src="/client/js/wallet.js"></script>
