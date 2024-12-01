@@ -96,12 +96,19 @@
         </div>
         <div class="card-form">
           <input
-            type="text"
+            type="number"
             name="Card number"
             id="card-number"
             placeholder="Enter card number"
           />
-          <input type="date" name="Expiry Date" id="expiry-date" />
+          <input
+            type="month"
+            min="2025-01"
+            value=""
+            id="expiry-date"
+            name="expiry_date"
+            placeholder="MM / YY"
+          />
           <input
             type="text"
             name="Security Code"
@@ -119,7 +126,7 @@
         <div class="mobile-form">
           <input type="number" name="Contact" id="mobile-number" />
           <select id="carrier" name="carrier">
-            <option value="SMART">SMART</option>
+            <option value="SMART" selected>SMART</option>
             <option value="GLOBE">GLOBE</option>
             <option value="SUN">SUN</option>
             <option value="DITO">DITO</option>
