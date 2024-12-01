@@ -46,6 +46,7 @@ run().catch(console.dir);
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 // Services API endpoints
 const netflixRoutes = require("./services/netflix");
 const spotifyRoutes = require("./services/spotify");
@@ -63,7 +64,7 @@ app.use("/service/disney", disneyRoutes);
 app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     if (!email || !password) {
-        res.status(400).json({ message: "Email ad password are required" });
+        res.status(400).json({ message: "Email and password are required" });
         return;
     }
     try {
@@ -99,7 +100,88 @@ app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 }));
 // User Sign Up
 app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { firstName, lastName, province, city, zip, address, email, password, contact, } = req.body;
+    const { userInfo, paymentInfo, method } = req.body;
+    console.log("Request body:", req.body);
+    if (!userInfo || !paymentInfo || !method) {
+        console.log("information missing or null");
+        res.status(400).json({ message: "information missing or null" });
+        return;
+    }
+    // Checks and Cancels signing up if user already exist
+    const usersCollection = client.db("MMM").collection("users");
+    let user = yield usersCollection.findOne({
+        email: userInfo.email,
+    });
+    if (user) {
+        console.log("This account already exists");
+        res.status(400).json({ message: "This account already exists" });
+        return;
+    }
+    // Adds user document to the users collection
+    usersCollection.insertOne({
+        email: userInfo.email,
+        password: userInfo.password,
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+        contact: userInfo.contact,
+        address: userInfo.address,
+        country: userInfo.country,
+        state: userInfo.state,
+        city: userInfo.city,
+        balance: "0",
+        monthlyLimit: "0",
+    });
+    // Register wallet for newly signed user
+    const walletsCollection = client.db("MMM").collection("wallets");
+    user = yield usersCollection.findOne({
+        email: userInfo.email,
+        password: userInfo.password,
+    });
+    if (!user) {
+        console.log("No user found");
+        res.status(400).json("No user found");
+        return;
+    }
+    if (method == "card") {
+        walletsCollection.insertOne({
+            type: "card",
+            userID: user === null || user === void 0 ? void 0 : user._id,
+            securityCode: paymentInfo.securityCode,
+            name: paymentInfo.cardName,
+            cardNumber: paymentInfo.cardNumber,
+            expiryDate: paymentInfo.expiryDate,
+        });
+    }
+    else if (method == "mobile") {
+        walletsCollection.insertOne({
+            type: "mobile",
+            userID: user === null || user === void 0 ? void 0 : user._id,
+            number: paymentInfo.mobileNumber,
+            carrier: paymentInfo.simCarrier,
+        });
+    }
+    else {
+        console.log("invalid method");
+        res.status(400).json({ message: "invalid method" });
+        return;
+    }
+    //Send validated and registered data back
+    res.status(200).json({
+        message: "Login successful",
+        user: {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            country: user.country,
+            state: user.state,
+            city: user.city,
+            address: user.address,
+            email: user.email,
+            contact: user.contact,
+            balance: user.balance,
+            monthlyLimit: user.monthlyLimit,
+        },
+    });
 }));
 // Wallets Handler
 app.post("/getWallet", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -9,6 +9,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const email = document.getElementById("email");
   const password = document.getElementById("password");
   const contact = document.getElementById("contact");
+  const country = document.getElementById("country");
+  const state = document.getElementById("state");
+  const city = document.getElementById("city");
+
+  let userInfoContent;
 
   // From the sign up page, it returns the client back to the log in page
   document.querySelector("#cancel").addEventListener("click", () => {
@@ -28,6 +33,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (isUserInfoComplete == true) {
+      userInfoContent = {
+        firstName: firstName.value,
+        lastName: lastName.value,
+        address: address.value,
+        email: email.value,
+        password: password.value,
+        contact: contact.value,
+        country: country.value,
+        state: state.value,
+        city: city.value,
+      };
       signUpSection.style.display = "none";
       paymentMethodSection.style.display = "block";
       document.getElementById("nav-cancel").style.display = "block";
@@ -47,10 +63,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const expiryDate = document.getElementById("expiry-date");
   const securityCode = document.getElementById("cvv");
   const cardName = document.getElementById("card-name");
+  let bankInfoContent;
   const bankRegisterBtn = document.getElementById("bank-register");
 
   const mobileNumber = document.getElementById("mobile-number");
   const simCarrier = document.getElementById("carrier");
+  let mobileInfoContent;
   const mobileRegisterBtn = document.getElementById("mobile-register");
 
   bankRegisterBtn.addEventListener("click", () => {
@@ -62,7 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
     if (isBankInfoComplete == true) {
-      window.location.href = "home.html";
+      bankInfoContent = {
+        cardNumber: cardNumber.value,
+        expiryDate: expiryDate.value,
+        securityCode: securityCode.value,
+        cardName: cardName.value,
+      };
+      sendUserData(userInfoContent, bankInfoContent, "card");
     }
   });
 
@@ -70,7 +94,35 @@ document.addEventListener("DOMContentLoaded", () => {
     if (mobileNumber.value == "" || simCarrier.value == "") {
       return;
     } else {
-      window.location.href = "home.html";
+      mobileInfoContent = {
+        mobileNumber: mobileNumber.value,
+        simCarrier: simCarrier.value,
+      };
+      sendUserData(userInfoContent, mobileInfoContent, "mobile");
     }
   });
+
+  async function sendUserData(userInfo, paymentInfo, method) {
+    console.log(userInfo, paymentInfo, method);
+    try {
+      const response = await fetch("http://localhost:5000/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userInfo: userInfo,
+          paymentInfo: paymentInfo,
+          method: method,
+        }),
+      });
+      const data = await response.json();
+      console.log(data);
+      localStorage.setItem("userData", JSON.stringify(data));
+
+      if (response.ok) {
+        window.location.href = "/client/pages/home.html";
+      }
+    } catch (error) {
+      console.error("Error sending user data");
+    }
+  }
 });

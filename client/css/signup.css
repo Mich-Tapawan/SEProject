@@ -44,7 +44,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   justify-content: space-between;
-  gap: 2rem;
+  gap: 4rem;
 }
 
 input,
