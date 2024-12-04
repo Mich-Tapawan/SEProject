@@ -78,16 +78,6 @@ app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             message: "Login successful",
             user: {
                 _id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                country: user.country,
-                state: user.state,
-                city: user.city,
-                address: user.address,
-                email: user.email,
-                contact: user.contact,
-                balance: user.balance,
-                monthlyLimit: user.monthlyLimit,
             },
         });
         return;
@@ -100,9 +90,9 @@ app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 }));
 // User Sign Up
 app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userInfo, paymentInfo, method } = req.body;
+    const { userInfo } = req.body;
     console.log("Request body:", req.body);
-    if (!userInfo || !paymentInfo || !method) {
+    if (!userInfo) {
         console.log("information missing or null");
         res.status(400).json({ message: "information missing or null" });
         return;
@@ -132,35 +122,10 @@ app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             balance: "0",
             monthlyLimit: "0",
         });
-        // Register wallet for newly signed user
-        const walletsCollection = client.db("MMM").collection("wallets");
+        // Send validated and registered data back
         user = yield usersCollection.findOne({
             email: userInfo.email,
         });
-        if (method == "card") {
-            walletsCollection.insertOne({
-                type: "card",
-                userID: user === null || user === void 0 ? void 0 : user._id,
-                securityCode: paymentInfo.securityCode,
-                name: paymentInfo.cardName,
-                cardNumber: paymentInfo.cardNumber,
-                expiryDate: paymentInfo.expiryDate,
-            });
-        }
-        else if (method == "mobile") {
-            walletsCollection.insertOne({
-                type: "mobile",
-                userID: user === null || user === void 0 ? void 0 : user._id,
-                number: paymentInfo.mobileNumber,
-                carrier: paymentInfo.simCarrier,
-            });
-        }
-        else {
-            console.log("invalid method");
-            res.status(400).json({ message: "invalid method" });
-            return;
-        }
-        //Send validated and registered data back
         res.status(200).json({
             message: "Login successful",
             user: {
@@ -184,6 +149,39 @@ app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         return;
     }
 }));
+// Load User Data
+app.get("/getUserData/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userID = req.params.id;
+    console.log(userID);
+    if (!userID) {
+        console.log("User ID is missing");
+        res.status(400).json({ message: "User ID is missing" });
+        return;
+    }
+    // Validate the userID format
+    if (!mongodb_1.ObjectId.isValid(userID)) {
+        console.log("Invalid User ID format");
+        res.status(400).json({ message: "Invalid User ID format" });
+        return;
+    }
+    try {
+        // Convert userID to MongoDB ObjectId
+        const objectId = new mongodb_1.ObjectId(userID);
+        const walletsCollection = client.db("MMM").collection("users");
+        const user = yield walletsCollection.findOne({ _id: objectId });
+        console.log(user);
+        if (!user) {
+            res.status(400).json({ message: "No user found" });
+            return;
+        }
+        res.status(200).json(user);
+    }
+    catch (error) {
+        console.error("Error accessing wallet:", error);
+        res.status(500).json({ message: "Internal server error" });
+        return;
+    }
+}));
 // Wallets Handler
 app.get("/getWallets/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userID = req.params.id;
@@ -199,7 +197,7 @@ app.get("/getWallets/:id", (req, res) => __awaiter(void 0, void 0, void 0, funct
         return;
     }
     try {
-        //Conver userID to MongoDB ObjectId
+        //Convert userID to MongoDB ObjectId
         const objectId = new mongodb_1.ObjectId(userID);
         const walletsCollection = client.db("MMM").collection("wallets");
         const wallets = yield walletsCollection
@@ -291,51 +289,53 @@ app.post("/removeWallet", (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 }));
 // Deposit or Transfer Balance
-app.post("/modifyBalance"),
-    (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const { userID, amount, inquiry } = req.body;
-        console.log(req.body);
-        if (!userID || !amount || !inquiry) {
-            console.log("Missing information");
-            res.status(400).json("Missing information");
+app.post("/modifyBalance", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { walletInfo, userID, amount, inquiry } = req.body;
+    console.log("yun oh");
+    console.log(req.body);
+    if (!userID || !amount || !inquiry) {
+        console.log("Missing information");
+        res.status(400).json("Missing information");
+        return;
+    }
+    if (!mongodb_1.ObjectId.isValid(userID)) {
+        console.log("Invalid User ID format");
+        res.status(400).json({ message: "Invalid User ID format" });
+        return;
+    }
+    try {
+        const objectId = new mongodb_1.ObjectId(userID);
+        const usersCollection = client.db("MMM").collection("users");
+        let user = yield usersCollection.findOne({ _id: objectId });
+        if (!user) {
+            res.status(401).json({ message: "Invalid user" });
             return;
         }
-        if (!mongodb_1.ObjectId.isValid(userID)) {
-            console.log("Invalid User ID format");
-            res.status(400).json({ message: "Invalid User ID format" });
-            return;
-        }
-        try {
-            const objectId = new mongodb_1.ObjectId(userID);
-            const usersCollection = client.db("MMM").collection("users");
-            const user = yield usersCollection.findOne({ _id: objectId });
-            const computation = inquiry == "deposit" ? (user === null || user === void 0 ? void 0 : user.balance) + amount : (user === null || user === void 0 ? void 0 : user.balance) - amount;
-            usersCollection.updateOne({ _id: userID }, { $set: computation });
-            if (!user) {
-                res.status(401).json({ message: "Invalid user" });
-                return;
-            }
-            res.status(200).json({
-                message: "Login successful",
-                user: {
-                    _id: user._id,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    country: user.country,
-                    state: user.state,
-                    city: user.city,
-                    address: user.address,
-                    email: user.email,
-                    contact: user.contact,
-                    balance: user.balance,
-                    monthlyLimit: user.monthlyLimit,
-                },
-            });
-        }
-        catch (error) {
-            console.log("Error inserting wallet: ", error);
-            res.status(400).json({ message: "Error inserting wallet" });
-            return;
-        }
-    });
+        const computation = inquiry == "deposit"
+            ? Number(user === null || user === void 0 ? void 0 : user.balance) + Number(amount)
+            : Number(user === null || user === void 0 ? void 0 : user.balance) - Number(amount);
+        usersCollection.updateOne({ _id: objectId }, { $set: { balance: computation } });
+        res.status(200).json({
+            message: "sent deposit",
+            user: {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                country: user.country,
+                state: user.state,
+                city: user.city,
+                address: user.address,
+                email: user.email,
+                contact: user.contact,
+                balance: computation,
+                monthlyLimit: user.monthlyLimit,
+            },
+        });
+    }
+    catch (error) {
+        console.log("Error modifying balance: ", error);
+        res.status(400).json({ message: "Error modifying balance" });
+        return;
+    }
+}));
 app.listen(5000, () => console.log("Server running at PORT 5000"));

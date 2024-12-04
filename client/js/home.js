@@ -3,14 +3,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const activeSubs = document.getElementById("active-subs");
   const budgetPercentage = document.getElementById("budget-percentage");
   const budgetLimit = document.getElementById("budget-limit");
-  const item = localStorage.getItem("userData");
-  const res = JSON.parse(item);
-  const userData = res.user;
-  const budgetUsed = (5000 / userData.monthlyLimit) * 100;
-  console.log(userData);
+  const item = localStorage.getItem("userID");
+  let user = JSON.parse(item);
 
-  currentBalance.innerHTML = `₱${userData.balance}`;
-  activeSubs.innerHTML = 6;
-  budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
-  budgetLimit.innerHTML = `₱${userData.monthlyLimit}`;
+  console.log("userID", user._id);
+  loadData(user._id);
+
+  async function loadData(userID) {
+    console.log(userID);
+    try {
+      const res = await fetch(`http://localhost:5000/getUserData/${userID}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const userData = await res.json();
+
+      console.log(userData);
+      currentBalance.innerHTML = `₱${userData.balance}`;
+      budgetLimit.innerHTML = `₱${userData.monthlyLimit}`;
+      const budgetUsed =
+        (Number(userData.monthlyLimit) / Number(userData.balance)) * 100;
+      budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+    } catch (error) {
+      console.error("Error fetching user data: ", error);
+    }
+  }
 });

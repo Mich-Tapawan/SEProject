@@ -25,7 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ email: email, password: password }),
       });
       const data = await response.json();
-      localStorage.setItem("userData", JSON.stringify(data));
+      const user = data.user;
+      localStorage.setItem("userID", JSON.stringify(user));
 
       if (response.ok) {
         window.location.href = "/client/pages/home.html";

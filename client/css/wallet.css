@@ -112,7 +112,7 @@ h3 {
   background-color: var(--primary);
 }
 
-#registered-wallets li:not(:nth-child(1)) {
+#registered-wallets li {
   display: flex;
   padding: 1.5rem;
   justify-content: space-between;
@@ -132,22 +132,7 @@ h3 {
   margin: 0;
 }
 
-#addWallet {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #161629;
-  height: 6.5rem;
-  margin-bottom: 1.5rem;
-  border-radius: 25px;
-  cursor: pointer;
-}
-
-#addWallet img {
-  width: 3rem;
-}
-
-.add-wallet-container {
+.add-sub-container {
   display: none;
   flex-direction: column;
   position: absolute;
