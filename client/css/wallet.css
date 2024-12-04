@@ -92,7 +92,7 @@ h3 {
   margin: 0.5rem;
 }
 
-#registered-wallets {
+#registered-subs {
   width: 100%;
   height: 520px;
   list-style: none;
@@ -101,18 +101,18 @@ h3 {
   padding-right: 1rem;
 }
 
-#registered-wallets::-webkit-scrollbar {
+#registered-subs::-webkit-scrollbar {
   width: 8px;
 }
-#registered-wallets::-webkit-scrollbar-track {
+#registered-subs::-webkit-scrollbar-track {
   background-color: #1a1a3d;
 }
 
-#registered-wallets::-webkit-scrollbar-thumb {
+#registered-subs::-webkit-scrollbar-thumb {
   background-color: var(--primary);
 }
 
-#registered-wallets li {
+#registered-subs li {
   display: flex;
   padding: 1.5rem;
   justify-content: space-between;
@@ -123,11 +123,11 @@ h3 {
   margin-bottom: 1.5rem;
   cursor: pointer;
 }
-#registered-wallets li h5 {
+#registered-subs li h5 {
   font-size: 1.5rem;
   margin: 0;
 }
-#registered-wallets li h6 {
+#registered-subs li h6 {
   font-size: 1.5rem;
   margin: 0;
 }
@@ -141,8 +141,10 @@ h3 {
   transform: translate(-50%, -50%);
   justify-content: center;
   background-color: #fff;
+  border-radius: 25px;
   height: 450px;
   width: 800px;
+  text-align: center;
 }
 
 #return-btn {
@@ -158,12 +160,19 @@ h3 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-inline: 3rem;
+  padding-inline: 4rem;
   gap: 2rem;
 }
 
-.choose-type > * {
-  height: 100px;
+.choose-type p {
+  color: #0d0d1b;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.choose-type button {
+  height: 80px;
   width: 100%;
   color: #fff;
   font-size: 1.5rem;
@@ -173,10 +182,12 @@ h3 {
 }
 
 #card-btn {
-  background-color: var(--primary);
+  background-color: var(--dark);
 }
 #mobile-btn {
-  background-color: var(--secondary);
+  background-color: transparent;
+  color: #0d0d1b;
+  border: solid 2px #0d0d1b;
 }
 
 .card-form,
@@ -185,8 +196,17 @@ h3 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 4rem;
+  padding: 4rem 4rem 2rem 4rem;
   gap: 1rem;
+}
+
+.card-form button,
+.mobile-form button {
+  background-color: var(--dark);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .card-form > * {
@@ -195,11 +215,17 @@ h3 {
   width: 100%;
 }
 
-.mobile-form > * {
+.mobile-form > *:not(:nth-child(1)) {
   padding-left: 1rem;
   height: 3rem;
   width: 100%;
   border: solid 1px black;
+}
+
+.mobile-form p {
+  color: #0d0d1b;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 #card-register-btn,

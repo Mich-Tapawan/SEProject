@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const activeSubs = document.getElementById("active-subs");
   const budgetPercentage = document.getElementById("budget-percentage");
   const budgetLimit = document.getElementById("budget-limit");
+
+  // Load user data
   const item = localStorage.getItem("userID");
   let user = JSON.parse(item);
 
@@ -11,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadData(userID) {
     console.log(userID);
+
     try {
       const res = await fetch(`http://localhost:5000/getUserData/${userID}`, {
         method: "GET",

@@ -1,14 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const detailsBtn = document.getElementById("details");
-  const subscriptionsBtn = document.getElementById("subscriptions");
-
   const detailsSection = document.getElementById("details-sec");
-  const subscriptionsSection = document.getElementById("subscriptions-sec");
 
   // Initial Account Page state
   detailsBtn.style.color = "#ff2575";
   detailsSection.style.display = "block";
-  subscriptionsSection.style.display = "none";
 
   // sidebar section toggling
   document.querySelectorAll(".sidebar-item").forEach((item) => {
@@ -20,12 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         detailsSection.style.display = "block";
         subscriptionsSection.style.display = "none";
-      } else if (sec === "subscriptions") {
-        detailsBtn.style.color = "white";
-        subscriptionsBtn.style.color = "#ff2575";
-
-        detailsSection.style.display = "none";
-        subscriptionsSection.style.display = "block";
       } else if (sec === "logout") {
         localStorage.setItem("userData", "");
         window.location.href = "/client/index.html";
@@ -41,15 +31,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const userAddress = document.getElementById("address");
   const userEmail = document.getElementById("email");
   const userPhone = document.getElementById("phone");
-  const item = localStorage.getItem("userData");
-  const user = JSON.parse(item);
-  const userData = user.user;
 
-  userName.innerHTML = `${userData.firstName} ${userData.lastName}`;
-  userCountry.innerHTML = userData.country;
-  userState.innerHTML = userData.state;
-  userCity.innerHTML = userData.city;
-  userAddress.innerHTML = userData.address;
-  userEmail.innerHTML = userData.email;
-  userPhone.innerHTML = userData.contact;
+  // Load User data
+  const item = localStorage.getItem("userID");
+  let user = JSON.parse(item);
+
+  console.log("userID", user._id);
+  loadData(user._id);
+
+  async function loadData(userID) {
+    console.log(userID);
+
+    try {
+      const res = await fetch(`http://localhost:5000/getUserData/${userID}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      const userData = await res.json();
+
+      console.log(userData);
+      userName.innerHTML = `${userData.firstName} ${userData.lastName}`;
+      userCountry.innerHTML = userData.country;
+      userState.innerHTML = userData.state;
+      userCity.innerHTML = userData.city;
+      userAddress.innerHTML = userData.address;
+      userEmail.innerHTML = userData.email;
+      userPhone.innerHTML = userData.contact;
+    } catch (error) {
+      console.error("Error fetching user data: ", error);
+    }
+  }
 });

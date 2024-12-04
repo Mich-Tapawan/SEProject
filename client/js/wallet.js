@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const currentBalance = document.getElementById("current-balance");
   const budgetLimit = document.getElementById("monthly-limit");
   const budgetPercentage = document.getElementById("budget-percentage");
+
   const item = localStorage.getItem("userID");
   let user = JSON.parse(item);
   console.log("userID", user._id);
@@ -11,6 +12,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Await the resolved subscription data
   //loadSubscriptions(user._id);
+
+  // Edit Monthly limit
+  document.querySelector("#edit").addEventListener("click", () => {});
 
   // Add Wallet
   const addSubContainer = document.querySelector(".add-sub-container");
@@ -237,6 +241,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // Deposit or Transfer money
   async function modifyBalance(walletInfo, userID, amount, inquiry) {
     console.log(walletInfo, userID, amount, inquiry);
     try {
@@ -250,6 +255,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       localStorage.setItem("userData", data);
       const user = data.user;
       currentBalance.innerHTML = `P${user.balance}`;
+      depositContainer.style.display = "none";
+      transferContainer.style.display = "none";
     } catch (error) {
       console.error("Error fetching data", error);
     }
