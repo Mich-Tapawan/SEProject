@@ -226,3 +226,53 @@ h3 {
   cursor: pointer;
   border: 0;
 }
+
+.deposit-container,
+.transfer-container {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  height: 300px;
+  width: 600px;
+  padding: 2rem;
+  gap: 2rem;
+}
+label {
+  color: #161629;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.deposit-container > *,
+.transfer-container > * {
+  height: 50px;
+}
+
+.deposit-container input,
+.transfer-container input {
+  padding-left: 1rem;
+  border: 1px solid var(--dark);
+}
+
+.deposit-container button,
+.transfer-container button {
+  background-color: #0d0d1b;
+  color: #fff;
+  font-weight: bold;
+}
+#exit-deposit,
+#exit-transfer {
+  position: absolute;
+  top: 1.5rem;
+  right: 0rem;
+  transform: translate(-50%, -50%);
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+}

@@ -307,4 +307,60 @@ app.post(
   }
 );
 
+// Deposit or Transfer Balance
+app.post("/modifyBalance"),
+  async (req: Request, res: Response): Promise<void> => {
+    const { userID, amount, inquiry } = req.body;
+    console.log(req.body);
+
+    if (!userID || !amount || !inquiry) {
+      console.log("Missing information");
+      res.status(400).json("Missing information");
+      return;
+    }
+
+    if (!ObjectId.isValid(userID)) {
+      console.log("Invalid User ID format");
+      res.status(400).json({ message: "Invalid User ID format" });
+      return;
+    }
+
+    try {
+      const objectId = new ObjectId(userID);
+      const usersCollection = client.db("MMM").collection("users");
+      const user = await usersCollection.findOne({ _id: objectId });
+
+      const computation =
+        inquiry == "deposit" ? user?.balance + amount : user?.balance - amount;
+
+      usersCollection.updateOne({ _id: userID }, { $set: computation });
+
+      if (!user) {
+        res.status(401).json({ message: "Invalid user" });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Login successful",
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          country: user.country,
+          state: user.state,
+          city: user.city,
+          address: user.address,
+          email: user.email,
+          contact: user.contact,
+          balance: user.balance,
+          monthlyLimit: user.monthlyLimit,
+        },
+      });
+    } catch (error) {
+      console.log("Error inserting wallet: ", error);
+      res.status(400).json({ message: "Error inserting wallet" });
+      return;
+    }
+  };
+
 app.listen(5000, () => console.log("Server running at PORT 5000"));

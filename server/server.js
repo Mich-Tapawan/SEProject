@@ -290,4 +290,52 @@ app.post("/removeWallet", (req, res) => __awaiter(void 0, void 0, void 0, functi
         return;
     }
 }));
+// Deposit or Transfer Balance
+app.post("/modifyBalance"),
+    (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const { userID, amount, inquiry } = req.body;
+        console.log(req.body);
+        if (!userID || !amount || !inquiry) {
+            console.log("Missing information");
+            res.status(400).json("Missing information");
+            return;
+        }
+        if (!mongodb_1.ObjectId.isValid(userID)) {
+            console.log("Invalid User ID format");
+            res.status(400).json({ message: "Invalid User ID format" });
+            return;
+        }
+        try {
+            const objectId = new mongodb_1.ObjectId(userID);
+            const usersCollection = client.db("MMM").collection("users");
+            const user = yield usersCollection.findOne({ _id: objectId });
+            const computation = inquiry == "deposit" ? (user === null || user === void 0 ? void 0 : user.balance) + amount : (user === null || user === void 0 ? void 0 : user.balance) - amount;
+            usersCollection.updateOne({ _id: userID }, { $set: computation });
+            if (!user) {
+                res.status(401).json({ message: "Invalid user" });
+                return;
+            }
+            res.status(200).json({
+                message: "Login successful",
+                user: {
+                    _id: user._id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    country: user.country,
+                    state: user.state,
+                    city: user.city,
+                    address: user.address,
+                    email: user.email,
+                    contact: user.contact,
+                    balance: user.balance,
+                    monthlyLimit: user.monthlyLimit,
+                },
+            });
+        }
+        catch (error) {
+            console.log("Error inserting wallet: ", error);
+            res.status(400).json({ message: "Error inserting wallet" });
+            return;
+        }
+    });
 app.listen(5000, () => console.log("Server running at PORT 5000"));

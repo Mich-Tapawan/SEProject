@@ -96,7 +96,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   //Remove Wallet
   const removeBtn = document.getElementById("remove");
-
   removeBtn.addEventListener("click", () => {
     // Convert the children to an array and iterate over them
     Array.from(walletList.children).forEach((item) => {
@@ -105,6 +104,52 @@ document.addEventListener("DOMContentLoaded", async () => {
         removeWallet(item.dataset.value);
       }
     });
+  });
+
+  //Deposit Money
+  const depositBtn = document.getElementById("deposit");
+  const depositContainer = document.querySelector(".deposit-container");
+  const depositAmount = document.getElementById("deposit-amount");
+  const depositSubmit = document.getElementById("deposit-submit");
+  const depositExit = document.getElementById("exit-deposit");
+
+  depositBtn.addEventListener("click", () => {
+    depositContainer.style.display = "flex";
+  });
+
+  depositExit.addEventListener("click", () => {
+    depositContainer.style.display = "none";
+    transferContainer.style.display = "none";
+  });
+
+  depositSubmit.addEventListener("click", () => {
+    if (depositAmount.value == "") {
+      return;
+    }
+    modifyBalance(userInfo._id, depositAmount.value, "deposit");
+  });
+
+  //Transfer Money
+  const transferBtn = document.getElementById("transfer");
+  const transferContainer = document.querySelector(".transfer-container");
+  const transferAmount = document.getElementById("transfer-amount");
+  const transferSubmit = document.getElementById("transfer-submit");
+  const transferExit = document.getElementById("exit-transfer");
+
+  transferBtn.addEventListener("click", () => {
+    transferContainer.style.display = "flex";
+  });
+
+  transferExit.addEventListener("click", () => {
+    transferContainer.style.display = "none";
+    depositContainer.style.display = "none";
+  });
+
+  transferSubmit.addEventListener("click", () => {
+    if (transferAmount.value == "") {
+      return;
+    }
+    modifyBalance(userInfo._id, transferAmount.value, "transfer");
   });
 
   async function loadWallets(id) {
@@ -199,6 +244,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     } catch (error) {
       console.error("Error connecting to server", error);
+    }
+  }
+
+  async function modifyBalance(userID, amount, inquiry) {
+    console.log(userID, amount, inquiry);
+    try {
+      const res = await fetch("http://localhost:5000/modifyBalance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userID, amount, inquiry }),
+      });
+      const data = await res.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching data", error);
     }
   }
 });
