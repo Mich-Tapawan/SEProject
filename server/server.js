@@ -291,7 +291,6 @@ app.post("/removeWallet", (req, res) => __awaiter(void 0, void 0, void 0, functi
 // Deposit or Transfer Balance
 app.post("/modifyBalance", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { walletInfo, userID, amount, inquiry } = req.body;
-    console.log("yun oh");
     console.log(req.body);
     if (!userID || !amount || !inquiry) {
         console.log("Missing information");
@@ -318,23 +317,51 @@ app.post("/modifyBalance", (req, res) => __awaiter(void 0, void 0, void 0, funct
         res.status(200).json({
             message: "sent deposit",
             user: {
-                _id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                country: user.country,
-                state: user.state,
-                city: user.city,
-                address: user.address,
-                email: user.email,
-                contact: user.contact,
+                userID: userID,
                 balance: computation,
-                monthlyLimit: user.monthlyLimit,
             },
         });
     }
     catch (error) {
         console.log("Error modifying balance: ", error);
         res.status(400).json({ message: "Error modifying balance" });
+        return;
+    }
+}));
+// Edit budget limit
+app.post("/editBudgetLimit", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userID, limit } = req.body;
+    console.log(userID, limit);
+    if (!userID || !limit) {
+        console.log("Missing information");
+        res.status(400).json("Missing information");
+        return;
+    }
+    if (!mongodb_1.ObjectId.isValid(userID)) {
+        console.log("Invalid User ID format");
+        res.status(400).json({ message: "Invalid User ID format" });
+        return;
+    }
+    try {
+        const objectId = new mongodb_1.ObjectId(userID);
+        const usersCollection = client.db("MMM").collection("users");
+        let user = yield usersCollection.findOne({ _id: objectId });
+        if (!user) {
+            res.status(401).json({ message: "Invalid user" });
+            return;
+        }
+        usersCollection.updateOne({ _id: objectId }, { $set: { monthlyLimit: limit } });
+        res.status(200).json({
+            message: "Budget Limit edited successfully",
+            user: {
+                userID: userID,
+                monthlyLimit: limit,
+            },
+        });
+    }
+    catch (error) {
+        console.log("Error editing budget limit: ", error);
+        res.status(400).json({ message: "Error editing budget limit" });
         return;
     }
 }));

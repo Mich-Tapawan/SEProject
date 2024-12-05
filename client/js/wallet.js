@@ -14,7 +14,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   //loadSubscriptions(user._id);
 
   // Edit Monthly limit
-  document.querySelector("#edit").addEventListener("click", () => {});
+  const editContainer = document.querySelector(".edit-container");
+  const editInput = document.getElementById("edit-input");
+  const editCancelBtn = document.getElementById("edit-cancel");
+  const editConfirmBtn = document.getElementById("edit-confirm");
+
+  document.querySelector("#edit").addEventListener("click", () => {
+    editContainer.style.display = "flex";
+  });
+
+  editCancelBtn.addEventListener("click", () => {
+    editContainer.style.display = "none";
+  });
+
+  editConfirmBtn.addEventListener("click", () => {
+    editBudgetLimit(user._id, editInput.value);
+  });
 
   // Add Wallet
   const addSubContainer = document.querySelector(".add-sub-container");
@@ -254,11 +269,30 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log(data);
       localStorage.setItem("userData", data);
       const user = data.user;
-      currentBalance.innerHTML = `P${user.balance}`;
+      currentBalance.innerHTML = `₱${user.balance}`;
       depositContainer.style.display = "none";
       transferContainer.style.display = "none";
     } catch (error) {
       console.error("Error fetching data", error);
+    }
+  }
+
+  async function editBudgetLimit(userID, limit) {
+    console.log(userID, limit);
+    try {
+      const res = await fetch("http://localhost:5000/editBudgetLimit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userID, limit }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+      const user = data.user;
+      budgetLimit.innerHTML = `₱${user.monthlyLimit}`;
+      editContainer.style.display = "none";
+    } catch (error) {
+      console.error("Error editing budget limit: ", error);
     }
   }
 });
