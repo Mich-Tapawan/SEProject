@@ -182,7 +182,7 @@ app.get("/getUserData/:id", (req, res) => __awaiter(void 0, void 0, void 0, func
         return;
     }
 }));
-// Wallets Handler
+// Subscription Handler
 app.get("/getWallets/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userID = req.params.id;
     if (!userID) {
@@ -221,14 +221,13 @@ app.get("/getWallets/:id", (req, res) => __awaiter(void 0, void 0, void 0, funct
         return;
     }
 }));
-app.post("/addWallet", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { walletInfo } = req.body;
-    console.log(walletInfo);
-    const userID = walletInfo.userID;
-    const method = walletInfo.type;
-    if (!userID) {
-        console.log("User ID is missing");
-        res.status(400).json({ message: "User ID is missing" });
+// Add Subscription
+app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userID, service, plan } = req.body;
+    console.log(userID, service, plan);
+    if (!userID || !service || !plan) {
+        console.log("Information missing");
+        res.status(400).json({ message: "Information missing" });
         return;
     }
     // Validate the userID format
@@ -239,48 +238,38 @@ app.post("/addWallet", (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
     try {
         const objectId = new mongodb_1.ObjectId(userID);
-        const walletsCollection = client.db("MMM").collection("wallets");
-        if (method == "card") {
-            walletsCollection.insertOne({
-                type: "card",
-                securityCode: walletInfo.securityCode,
-                name: walletInfo.cardName,
-                cardNumber: walletInfo.cardNumber,
-                expiryDate: walletInfo.expiryDate,
-                userID: objectId,
-            });
-        }
-        else if (method == "mobile") {
-            walletsCollection.insertOne({
-                type: "mobile",
-                carrier: walletInfo.carrier,
-                number: walletInfo.number,
-                userID: objectId,
-            });
-        }
-        res.status(200).json({ message: "Successfully added wallet" });
-    }
-    catch (error) {
-        console.log("Error inserting wallet: ", error);
-        res.status(400).json({ message: "Error inserting wallet" });
-        return;
-    }
-}));
-// Add Wallet
-app.post("/removeWallet", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { number } = req.body;
-    console.log(number);
-    if (!number) {
-        console.log("Number is missing");
-        res.status(400).json({ message: "Number is missing" });
-        return;
-    }
-    try {
-        const walletsCollection = client.db("MMM").collection("wallets");
-        walletsCollection.deleteOne({ number: number });
-        walletsCollection.deleteOne({ cardNumber: number });
-        console.log("Wallet Deleted");
-        res.status(200).json("Wallet deleted");
+        const subscriptionCollection = client
+            .db("MMM")
+            .collection("subscriptions");
+        const [type, price] = plan.split(" - ");
+        // Get start date
+        const startDate = new Date();
+        const formattedStartDate = startDate
+            .toLocaleDateString("en-CA")
+            .replace(/\//g, "-"); // Converts current date to yyyy-mm-dd format
+        // Get end date
+        const nextMonthDate = new Date(startDate);
+        nextMonthDate.setMonth(startDate.getMonth() + 1);
+        const formattedNextMonthDate = nextMonthDate.toLocaleDateString("en-CA");
+        console.log(type, price, formattedStartDate, formattedNextMonthDate);
+        subscriptionCollection.insertOne({
+            userID: objectId,
+            service: service,
+            type: type,
+            price: price,
+            start: formattedStartDate,
+            end: formattedNextMonthDate,
+        });
+        // Count Active Subs
+        const subCount = yield subscriptionCollection.countDocuments({
+            userID: objectId,
+        });
+        console.log(subCount);
+        const usersCollection = client.db("MMM").collection("users");
+        yield usersCollection.updateOne({ _id: objectId }, { $set: { activeSubs: subCount + 1 } });
+        res
+            .status(200)
+            .json({ message: "Successfully added wallet", subCount: subCount });
     }
     catch (error) {
         console.log("Error inserting wallet: ", error);

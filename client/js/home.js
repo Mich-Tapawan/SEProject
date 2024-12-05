@@ -11,6 +11,95 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("userID", user._id);
   loadData(user._id);
 
+  // Generate Subscription Grid
+  let clickedSub;
+  const subscribeContainer = document.querySelector(".subscribe-form");
+  const serviceImg = document.getElementById("service-img");
+  const serviceName = document.getElementById("service-name");
+  const cancelBtn = document.getElementById("cancel-btn");
+  const subscribeBtn = document.getElementById("subscribe-btn");
+  const selectPlan = document.getElementById("select-plan");
+  const subscriptionList = document.getElementById("subscription-grid");
+  const subscriptions = [
+    {
+      name: "Netflix",
+      src: "/client/assets/netflix.png",
+      plan: ["Mobile - 149", "Basic - 149", "Standard - 459", "Premium - 549"],
+    },
+    {
+      name: "Spotify",
+      src: "/client/assets/spotify.png",
+      plan: ["Individual - 149", "Duo - 185", "Family - 214", "Student - 75"],
+    },
+    {
+      name: "Youtube",
+      src: "/client/assets/youtube.png",
+      plan: ["Individual - 159", "Family - 239", "Student - 95"],
+    },
+    {
+      name: "Prime Video",
+      src: "/client/assets/amazon.png",
+      plan: ["Standard - 149"],
+    },
+    {
+      name: "Disney+",
+      src: "/client/assets/disney.png",
+      plan: ["Mobile - 159", "Premium - 369"],
+    },
+    {
+      name: "HBO GO",
+      src: "/client/assets/hbo.png",
+      plan: ["Standard - 199"],
+    },
+  ];
+
+  subscriptions.forEach((subscription) => {
+    const li = document.createElement("li");
+    const img = document.createElement("img");
+    const h3 = document.createElement("h3");
+
+    img.src = subscription.src;
+    img.alt = subscription.name;
+    h3.innerHTML = subscription.name;
+
+    li.appendChild(img);
+    li.appendChild(h3);
+
+    li.addEventListener("click", () => {
+      clickedSub = subscription.name;
+      serviceImg.src = subscription.src;
+      serviceName.innerHTML = subscription.name;
+      subscribeContainer.style.display = "flex";
+
+      //Clear dropdown list
+      const items = Array.from(selectPlan.children);
+      items.forEach((item, index) => {
+        if (index !== 0) {
+          selectPlan.removeChild(item);
+        }
+      });
+
+      // Create dropdown options for service plans
+      let plans = subscription.plan;
+      plans.forEach((plan) => {
+        const option = document.createElement("option");
+        option.innerHTML = `${plan} php / per month`;
+        option.setAttribute("value", plan);
+        selectPlan.appendChild(option);
+      });
+    });
+
+    subscriptionList.appendChild(li);
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    subscribeContainer.style.display = "none";
+  });
+
+  subscribeBtn.addEventListener("click", () => {
+    addSubscription(user._id, clickedSub, selectPlan.value);
+  });
+
   async function loadData(userID) {
     console.log(userID);
 
@@ -27,8 +116,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const budgetUsed =
         (Number(userData.monthlyLimit) / Number(userData.balance)) * 100;
       budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+      activeSubs.innerHTML = userData.activeSubs;
     } catch (error) {
       console.error("Error fetching user data: ", error);
+    }
+  }
+
+  async function addSubscription(userID, service, plan) {
+    console.log(userID, service, plan);
+    try {
+      const res = await fetch("http://localhost:5000/addSubscription", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userID, service, plan }),
+      });
+      const data = await res.json();
+      activeSubs.innerHTML = Number(data.subCount);
+      subscribeContainer.style.display = "none";
+    } catch (error) {
+      console.error("Error adding subscription: ", error);
     }
   }
 });

@@ -18,14 +18,14 @@ body {
 .main-content {
   display: grid;
   height: 100vh;
-  grid-template-columns: 1fr 30%;
-  padding-top: 2rem;
+  grid-template-columns: 1fr 1fr;
   padding-inline: 10rem;
-  gap: 30%;
+  gap: 5%;
   align-items: center;
 }
 
 .user-info {
+  margin-top: 6rem;
   width: 100%;
   height: fit-content;
   grid-template-rows: repeat(3, 100%);
@@ -140,7 +140,100 @@ body {
   width: 100%;
 }
 
-@media (max-width: 1536px) {
+#subscription-grid {
+  margin-top: 5rem;
+  margin-left: 6rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 300px;
+  gap: 1rem;
+  padding: 0;
+}
+
+#subscription-grid li {
+  list-style: none;
+  padding: 0.3rem 1rem;
+  margin: 0;
+  width: 200px;
+  height: 200px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 25px;
+}
+
+#subscription-grid li img {
+  width: 180px;
+  margin: 0;
+  transition: ease-in-out 0.2s;
+}
+
+#subscription-grid h3 {
+  display: none;
+  margin: 0;
+  transition: ease-in-out 0.3s;
+}
+
+#subscription-grid li:hover {
+  background-color: #16162e;
+}
+
+#subscription-grid li:hover img {
+  width: 150px;
+}
+
+#subscription-grid li:hover h3 {
+  display: block;
+}
+
+.subscribe-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  flex-direction: column;
+  width: 400px;
+  padding: 2rem 4rem;
+  background-color: #ffffff;
+}
+
+.subscribe-form img {
+  align-self: center;
+  width: 100px;
+}
+
+.subscribe-form h4 {
+  color: #0d0d1b;
+  text-align: center;
+}
+
+.subscribe-form select {
+  height: 40px;
+  margin-bottom: 1rem;
+  padding-left: 1rem;
+}
+
+#subscribe-btn {
+  height: 40px;
+  background-color: var(--primary);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  border: 0;
+  margin-bottom: 1rem;
+}
+
+#cancel-btn {
+  height: 40px;
+  background-color: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+/* @media (max-width: 1536px) {
   .balance p {
     font-weight: bold;
     font-size: 3.5rem;
@@ -168,15 +261,15 @@ body {
   .subscribe-box {
     font-size: 1.2rem;
   }
-}
+} */
 
-@media (max-width: 1280px) {
+/* @media (max-width: 1280px) {
   .main-content {
     padding-inline: 6rem;
   }
-}
+} */
 
-@media (max-width: 1024px) {
+/* @media (max-width: 1024px) {
   .main-content {
     padding-top: 6rem;
     padding-inline: 4rem;
@@ -194,9 +287,9 @@ body {
   .image-grid img {
     width: 140px;
   }
-}
+} */
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .main-content {
     padding-inline: 2rem;
   }
@@ -204,10 +297,10 @@ body {
   .image-grid img {
     width: 120px;
   }
-}
+} */
 
-@media (max-width: 640px) {
+/* @media (max-width: 640px) {
   .main-content {
     padding-inline: 1rem;
   }
-}
+} */
