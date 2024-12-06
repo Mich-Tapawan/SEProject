@@ -38,21 +38,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Services API endpoints
-const netflixRoutes = require("./services/netflix");
-const spotifyRoutes = require("./services/spotify");
-const youtubeRoutes = require("./services/youtube");
-const primeRoutes = require("./services/prime");
-const hboRoutes = require("./services/hbo");
-const disneyRoutes = require("./services/disney");
-
-app.use("/service/netflix", netflixRoutes);
-app.use("/service/spotify", spotifyRoutes);
-app.use("/service/youtube", youtubeRoutes);
-app.use("/service/prime", primeRoutes);
-app.use("/service/hbo", hboRoutes);
-app.use("/service/disney", disneyRoutes);
-
 // User Log In
 app.post("/login", async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
@@ -224,7 +209,7 @@ app.get(
 
 // Subscription Handler
 app.get(
-  "/getWallets/:id",
+  "/getSubscriptions/:id",
   async (req: Request, res: Response): Promise<void> => {
     const userID = req.params.id;
     if (!userID) {
@@ -244,19 +229,20 @@ app.get(
       //Convert userID to MongoDB ObjectId
       const objectId = new ObjectId(userID);
 
-      const walletsCollection = client.db("MMM").collection("wallets");
-      const wallets = await walletsCollection
+      const subCollection = client.db("MMM").collection("subscriptions");
+      const subscriptions = await subCollection
         .find({ userID: objectId })
         .toArray();
-      console.log(wallets);
-      if (wallets.length < 1) {
-        console.log("User has no registered wallet");
-        res.status(400).json({ message: "User has no registered wallet" });
+      console.log(subscriptions);
+
+      if (subscriptions.length < 1) {
+        console.log("User has no registered subscription");
+        res
+          .status(400)
+          .json({ message: "User has no registered subscriptions=" });
         return;
       } else {
-        res.status(200).json({
-          wallets: wallets,
-        });
+        res.status(200).json(subscriptions);
       }
     } catch (error) {
       console.error("Error accessing wallet:", error);

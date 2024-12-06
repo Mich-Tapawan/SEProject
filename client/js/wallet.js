@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("userID", user._id);
   loadData(user._id);
 
-  // Await the resolved subscription data
-  //loadSubscriptions(user._id);
+  // Load subscription list
+  loadSubscriptions(user._id);
 
   // Edit Monthly limit
   const editContainer = document.querySelector(".edit-container");
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     editBudgetLimit(user._id, editInput.value);
   });
 
-  // Add Wallet
+  // Add Subscription
   const addSubContainer = document.querySelector(".add-sub-container");
   const returnBtn = document.getElementById("return-btn");
 
@@ -205,40 +205,44 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function loadSubscriptions(id) {
     try {
-      const response = await fetch(`http://localhost:5000/getWallets/${id}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      const walletsData = await response.json();
-      console.log(walletsData);
+      const response = await fetch(
+        `http://localhost:5000/getSubscriptions/${id}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const subData = await response.json();
+      console.log(subData);
 
-      //Clear wallet list
+      //Clear sub list
       const items = Array.from(subList.children);
       items.forEach((item, index) => {
-        if (index !== 0) {
-          subList.removeChild(item);
-        }
+        subList.removeChild(item);
       });
 
-      if (Array.isArray(walletsData?.wallets)) {
-        walletsData.wallets.forEach((wallet) => {
+      if (Array.isArray(subData)) {
+        subData.forEach((sub) => {
           const li = document.createElement("li");
+          const upper = document.createElement("div");
           const h5 = document.createElement("h5");
           const h6 = document.createElement("h6");
+          const lower = document.createElement("div");
+          const p = document.createElement("p");
+          const span = document.createElement("span");
 
-          // Insert wallet information
-          if (wallet.type == "mobile") {
-            h5.textContent = wallet.number;
-            h6.textContent = wallet.carrier;
-            li.setAttribute("data-value", wallet.number);
-          } else {
-            h5.textContent = wallet.cardNumber;
-            li.setAttribute("data-value", wallet.cardNumber);
-            h6.textContent = "CARD";
-          }
+          // Insert subscription information
+          h5.textContent = `${sub.type} Plan`;
+          h6.textContent = sub.service;
+          upper.append(h5, h6);
+          p.textContent = `P ${sub.price} / per month`;
+          span.textContent = `Expiration: ${sub.end}`;
+          lower.append(p, span);
 
-          li.appendChild(h5);
-          li.appendChild(h6);
+          li.setAttribute("data-value", sub.userID);
+
+          li.appendChild(upper);
+          li.appendChild(lower);
 
           li.addEventListener("click", () => {
             const children = document.querySelectorAll("#registered-subs li");
@@ -247,16 +251,16 @@ document.addEventListener("DOMContentLoaded", async () => {
               card.removeAttribute("class");
             });
             li.style.border = "4px solid #ff2575";
-            li.setAttribute("class", "selected-wallet");
+            li.setAttribute("class", "selected-subscription");
           });
 
           subList.appendChild(li);
         });
       } else {
-        console.error("No wallets found or invalid data format");
+        console.error("No subscription found or invalid data format");
       }
     } catch (error) {
-      console.error("Error fetching account wallet: ", error);
+      console.error("Error fetching account subscriptions: ", error);
     }
   }
 
