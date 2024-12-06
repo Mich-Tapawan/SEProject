@@ -336,12 +336,15 @@ app.post(
         return total + parseFloat(sub.price || 0); // Add subscription price (default to 0 if missing)
       }, 0);
 
-      console.log("Monthly expenses: ", monthlyExpenses);
+      // Subtract price from current wallet balance
+      const user = await usersCollection.findOne({ _id: objectId });
+      const updatedBalance = user?.balance - price;
+      console.log("updated balance: ", monthlyExpenses);
 
       // Update user monthlyExpenses
       await usersCollection.updateOne(
         { _id: objectId },
-        { $set: { monthlyExpenses: monthlyExpenses } }
+        { $set: { monthlyExpenses: monthlyExpenses, balance: updatedBalance } }
       );
 
       const authenticatedUser = await usersCollection.findOne({
@@ -391,12 +394,16 @@ app.post(
           ? Number(user?.balance) + Number(amount)
           : Number(user?.balance) - Number(amount);
 
-      usersCollection.updateOne(
+      await usersCollection.updateOne(
         { _id: objectId },
         { $set: { balance: computation } }
       );
 
-      res.status(200).json(user);
+      const authenticatedUser = await usersCollection.findOne({
+        _id: objectId,
+      });
+
+      res.status(200).json(authenticatedUser);
     } catch (error) {
       console.log("Error modifying balance: ", error);
       res.status(400).json({ message: "Error modifying balance" });

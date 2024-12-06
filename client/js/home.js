@@ -98,6 +98,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   subscribeBtn.addEventListener("click", () => {
+    if (selectPlan.value === "") {
+      return;
+    }
     addSubscription(user._id, clickedSub, selectPlan.value);
   });
 
@@ -134,6 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const data = await res.json();
 
+      currentBalance.innerHTML = `₱${data.balance}`;
       activeSubs.innerHTML = data.activeSubs;
       expenses.innerHTML = `₱${data.monthlyExpenses}`;
       const budgetUsed =

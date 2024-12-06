@@ -28,6 +28,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   editConfirmBtn.addEventListener("click", () => {
+    if (editInput.value === "") {
+      return;
+    }
     editBudgetLimit(user._id, editInput.value);
   });
 

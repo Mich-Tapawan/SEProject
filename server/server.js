@@ -289,9 +289,12 @@ app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, fun
         const monthlyExpenses = subscriptions.reduce((total, sub) => {
             return total + parseFloat(sub.price || 0); // Add subscription price (default to 0 if missing)
         }, 0);
-        console.log("Monthly expenses: ", monthlyExpenses);
+        // Subtract price from current wallet balance
+        const user = yield usersCollection.findOne({ _id: objectId });
+        const updatedBalance = (user === null || user === void 0 ? void 0 : user.balance) - price;
+        console.log("updated balance: ", monthlyExpenses);
         // Update user monthlyExpenses
-        yield usersCollection.updateOne({ _id: objectId }, { $set: { monthlyExpenses: monthlyExpenses } });
+        yield usersCollection.updateOne({ _id: objectId }, { $set: { monthlyExpenses: monthlyExpenses, balance: updatedBalance } });
         const authenticatedUser = yield usersCollection.findOne({
             _id: objectId,
         });
@@ -328,8 +331,11 @@ app.post("/modifyBalance", (req, res) => __awaiter(void 0, void 0, void 0, funct
         const computation = inquiry == "deposit"
             ? Number(user === null || user === void 0 ? void 0 : user.balance) + Number(amount)
             : Number(user === null || user === void 0 ? void 0 : user.balance) - Number(amount);
-        usersCollection.updateOne({ _id: objectId }, { $set: { balance: computation } });
-        res.status(200).json(user);
+        yield usersCollection.updateOne({ _id: objectId }, { $set: { balance: computation } });
+        const authenticatedUser = yield usersCollection.findOne({
+            _id: objectId,
+        });
+        res.status(200).json(authenticatedUser);
     }
     catch (error) {
         console.log("Error modifying balance: ", error);
