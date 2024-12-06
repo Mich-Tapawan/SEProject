@@ -121,8 +121,10 @@ app.post("/signup", async (req: Request, res: Response): Promise<void> => {
       country: userInfo.country,
       state: userInfo.state,
       city: userInfo.city,
-      balance: "0",
-      monthlyLimit: "0",
+      balance: 0,
+      monthlyLimit: 0,
+      activeSubs: 0,
+      monthlyExpenses: 0,
     });
 
     // Send validated and registered data back
@@ -130,20 +132,16 @@ app.post("/signup", async (req: Request, res: Response): Promise<void> => {
       email: userInfo.email,
     });
 
+    if (!user) {
+      console.log("User does not exist");
+      res.status(404).json("User does not exist");
+      return;
+    }
+
     res.status(200).json({
-      message: "Login successful",
+      message: "Signup successful",
       user: {
-        _id: user?._id,
-        firstName: user?.firstName,
-        lastName: user?.lastName,
-        country: user?.country,
-        state: user?.state,
-        city: user?.city,
-        address: user?.address,
-        email: user?.email,
-        contact: user?.contact,
-        balance: user?.balance,
-        monthlyLimit: user?.monthlyLimit,
+        _id: user._id,
       },
     });
   } catch (error) {
@@ -184,6 +182,36 @@ app.get(
         res.status(400).json({ message: "No user found" });
         return;
       }
+
+      // Count Active Subs
+      const subscriptionCollection = client
+        .db("MMM")
+        .collection("subscriptions");
+      const subCount = await subscriptionCollection.countDocuments({
+        userID: objectId,
+      });
+      console.log(subCount);
+
+      const usersCollection = client.db("MMM").collection("users");
+      await usersCollection.updateOne(
+        { _id: objectId },
+        { $set: { activeSubs: subCount } }
+      );
+
+      // Get total monthly expenses for all active services
+      const getSubs = subscriptionCollection.find({ userID: objectId });
+      const subscriptions = await getSubs.toArray();
+      const monthlyExpenses = subscriptions.reduce((total, sub) => {
+        return total + parseFloat(sub.price || 0); // Add subscription price (default to 0 if missing)
+      }, 0);
+
+      console.log("Monthly expenses: ", monthlyExpenses);
+
+      // Update user monthlyExpenses
+      await usersCollection.updateOne(
+        { _id: objectId },
+        { $set: { monthlyExpenses: monthlyExpenses } }
+      );
 
       res.status(200).json(user);
     } catch (error) {
@@ -279,7 +307,7 @@ app.post(
 
       console.log(type, price, formattedStartDate, formattedNextMonthDate);
 
-      subscriptionCollection.insertOne({
+      await subscriptionCollection.insertOne({
         userID: objectId,
         service: service,
         type: type,
@@ -288,21 +316,39 @@ app.post(
         end: formattedNextMonthDate,
       });
 
-      // Count Active Subs
+      // Count and set Active Subs
       const subCount = await subscriptionCollection.countDocuments({
         userID: objectId,
       });
-      console.log(subCount);
 
       const usersCollection = client.db("MMM").collection("users");
       await usersCollection.updateOne(
         { _id: objectId },
-        { $set: { activeSubs: subCount + 1 } }
+        { $set: { activeSubs: subCount } }
       );
 
-      res
-        .status(200)
-        .json({ message: "Successfully added wallet", subCount: subCount });
+      console.log("Sub Count: ", subCount);
+
+      // Get total monthly expenses for all active services
+      const getSubs = subscriptionCollection.find({ userID: objectId });
+      const subscriptions = await getSubs.toArray();
+      const monthlyExpenses = subscriptions.reduce((total, sub) => {
+        return total + parseFloat(sub.price || 0); // Add subscription price (default to 0 if missing)
+      }, 0);
+
+      console.log("Monthly expenses: ", monthlyExpenses);
+
+      // Update user monthlyExpenses
+      await usersCollection.updateOne(
+        { _id: objectId },
+        { $set: { monthlyExpenses: monthlyExpenses } }
+      );
+
+      const authenticatedUser = await usersCollection.findOne({
+        _id: objectId,
+      });
+
+      res.status(200).json(authenticatedUser);
     } catch (error) {
       console.log("Error inserting wallet: ", error);
       res.status(400).json({ message: "Error inserting wallet" });
@@ -333,7 +379,7 @@ app.post(
     try {
       const objectId = new ObjectId(userID);
       const usersCollection = client.db("MMM").collection("users");
-      let user = await usersCollection.findOne({ _id: objectId });
+      const user = await usersCollection.findOne({ _id: objectId });
 
       if (!user) {
         res.status(401).json({ message: "Invalid user" });
@@ -350,13 +396,7 @@ app.post(
         { $set: { balance: computation } }
       );
 
-      res.status(200).json({
-        message: "sent deposit",
-        user: {
-          userID: userID,
-          balance: computation,
-        },
-      });
+      res.status(200).json(user);
     } catch (error) {
       console.log("Error modifying balance: ", error);
       res.status(400).json({ message: "Error modifying balance" });
@@ -387,25 +427,23 @@ app.post(
     try {
       const objectId = new ObjectId(userID);
       const usersCollection = client.db("MMM").collection("users");
-      let user = await usersCollection.findOne({ _id: objectId });
+      const user = await usersCollection.findOne({ _id: objectId });
 
       if (!user) {
         res.status(401).json({ message: "Invalid user" });
         return;
       }
 
-      usersCollection.updateOne(
+      await usersCollection.updateOne(
         { _id: objectId },
         { $set: { monthlyLimit: limit } }
       );
 
-      res.status(200).json({
-        message: "Budget Limit edited successfully",
-        user: {
-          userID: userID,
-          monthlyLimit: limit,
-        },
+      const authenticatedUser = await usersCollection.findOne({
+        _id: objectId,
       });
+
+      res.status(200).json(authenticatedUser);
     } catch (error) {
       console.log("Error editing budget limit: ", error);
       res.status(400).json({ message: "Error editing budget limit" });

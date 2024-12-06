@@ -192,7 +192,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       currentBalance.innerHTML = `₱${userData.balance}`;
       budgetLimit.innerHTML = `₱${userData.monthlyLimit}`;
       const budgetUsed =
-        (Number(userData.monthlyLimit) / Number(userData.balance)) * 100;
+        (Number(userData.monthlyExpenses) / Number(userData.monthlyLimit)) *
+        100;
       budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
     } catch (error) {
       console.error("Error fetching user data: ", error);
@@ -267,9 +268,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
       const data = await res.json();
       console.log(data);
-      localStorage.setItem("userData", data);
-      const user = data.user;
-      currentBalance.innerHTML = `₱${user.balance}`;
+
+      currentBalance.innerHTML = `₱${data.balance}`;
+
       depositContainer.style.display = "none";
       transferContainer.style.display = "none";
     } catch (error) {
@@ -288,8 +289,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const data = await res.json();
       console.log(data);
-      const user = data.user;
-      budgetLimit.innerHTML = `₱${user.monthlyLimit}`;
+
+      budgetLimit.innerHTML = `₱${data.monthlyLimit}`;
+      const budgetUsed =
+        (Number(data.monthlyExpenses) / Number(data.monthlyLimit)) * 100;
+      budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+
       editContainer.style.display = "none";
     } catch (error) {
       console.error("Error editing budget limit: ", error);

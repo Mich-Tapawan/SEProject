@@ -56,8 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }),
       });
       const data = await response.json();
-      console.log(data);
-      localStorage.setItem("userData", JSON.stringify(data));
+      localStorage.setItem("userID", JSON.stringify(data));
 
       if (!response.ok) {
         console.error("Error signing up", error);

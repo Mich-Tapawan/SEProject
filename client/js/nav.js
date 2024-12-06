@@ -3,6 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const navList = document.getElementById("nav-list");
   const notif = document.getElementById("bell");
 
+  if (!burger || !navList || !notif) {
+    return;
+  }
+
   burger.addEventListener("click", () => {
     navList.style.display = navList.style.display == "none" ? "flex" : "none";
   });

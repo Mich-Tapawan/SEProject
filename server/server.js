@@ -119,27 +119,24 @@ app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             country: userInfo.country,
             state: userInfo.state,
             city: userInfo.city,
-            balance: "0",
-            monthlyLimit: "0",
+            balance: 0,
+            monthlyLimit: 0,
+            activeSubs: 0,
+            monthlyExpenses: 0,
         });
         // Send validated and registered data back
         user = yield usersCollection.findOne({
             email: userInfo.email,
         });
+        if (!user) {
+            console.log("User does not exist");
+            res.status(404).json("User does not exist");
+            return;
+        }
         res.status(200).json({
-            message: "Login successful",
+            message: "Signup successful",
             user: {
-                _id: user === null || user === void 0 ? void 0 : user._id,
-                firstName: user === null || user === void 0 ? void 0 : user.firstName,
-                lastName: user === null || user === void 0 ? void 0 : user.lastName,
-                country: user === null || user === void 0 ? void 0 : user.country,
-                state: user === null || user === void 0 ? void 0 : user.state,
-                city: user === null || user === void 0 ? void 0 : user.city,
-                address: user === null || user === void 0 ? void 0 : user.address,
-                email: user === null || user === void 0 ? void 0 : user.email,
-                contact: user === null || user === void 0 ? void 0 : user.contact,
-                balance: user === null || user === void 0 ? void 0 : user.balance,
-                monthlyLimit: user === null || user === void 0 ? void 0 : user.monthlyLimit,
+                _id: user._id,
             },
         });
     }
@@ -174,6 +171,25 @@ app.get("/getUserData/:id", (req, res) => __awaiter(void 0, void 0, void 0, func
             res.status(400).json({ message: "No user found" });
             return;
         }
+        // Count Active Subs
+        const subscriptionCollection = client
+            .db("MMM")
+            .collection("subscriptions");
+        const subCount = yield subscriptionCollection.countDocuments({
+            userID: objectId,
+        });
+        console.log(subCount);
+        const usersCollection = client.db("MMM").collection("users");
+        yield usersCollection.updateOne({ _id: objectId }, { $set: { activeSubs: subCount } });
+        // Get total monthly expenses for all active services
+        const getSubs = subscriptionCollection.find({ userID: objectId });
+        const subscriptions = yield getSubs.toArray();
+        const monthlyExpenses = subscriptions.reduce((total, sub) => {
+            return total + parseFloat(sub.price || 0); // Add subscription price (default to 0 if missing)
+        }, 0);
+        console.log("Monthly expenses: ", monthlyExpenses);
+        // Update user monthlyExpenses
+        yield usersCollection.updateOne({ _id: objectId }, { $set: { monthlyExpenses: monthlyExpenses } });
         res.status(200).json(user);
     }
     catch (error) {
@@ -252,7 +268,7 @@ app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, fun
         nextMonthDate.setMonth(startDate.getMonth() + 1);
         const formattedNextMonthDate = nextMonthDate.toLocaleDateString("en-CA");
         console.log(type, price, formattedStartDate, formattedNextMonthDate);
-        subscriptionCollection.insertOne({
+        yield subscriptionCollection.insertOne({
             userID: objectId,
             service: service,
             type: type,
@@ -260,16 +276,26 @@ app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, fun
             start: formattedStartDate,
             end: formattedNextMonthDate,
         });
-        // Count Active Subs
+        // Count and set Active Subs
         const subCount = yield subscriptionCollection.countDocuments({
             userID: objectId,
         });
-        console.log(subCount);
         const usersCollection = client.db("MMM").collection("users");
-        yield usersCollection.updateOne({ _id: objectId }, { $set: { activeSubs: subCount + 1 } });
-        res
-            .status(200)
-            .json({ message: "Successfully added wallet", subCount: subCount });
+        yield usersCollection.updateOne({ _id: objectId }, { $set: { activeSubs: subCount } });
+        console.log("Sub Count: ", subCount);
+        // Get total monthly expenses for all active services
+        const getSubs = subscriptionCollection.find({ userID: objectId });
+        const subscriptions = yield getSubs.toArray();
+        const monthlyExpenses = subscriptions.reduce((total, sub) => {
+            return total + parseFloat(sub.price || 0); // Add subscription price (default to 0 if missing)
+        }, 0);
+        console.log("Monthly expenses: ", monthlyExpenses);
+        // Update user monthlyExpenses
+        yield usersCollection.updateOne({ _id: objectId }, { $set: { monthlyExpenses: monthlyExpenses } });
+        const authenticatedUser = yield usersCollection.findOne({
+            _id: objectId,
+        });
+        res.status(200).json(authenticatedUser);
     }
     catch (error) {
         console.log("Error inserting wallet: ", error);
@@ -294,7 +320,7 @@ app.post("/modifyBalance", (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const objectId = new mongodb_1.ObjectId(userID);
         const usersCollection = client.db("MMM").collection("users");
-        let user = yield usersCollection.findOne({ _id: objectId });
+        const user = yield usersCollection.findOne({ _id: objectId });
         if (!user) {
             res.status(401).json({ message: "Invalid user" });
             return;
@@ -303,13 +329,7 @@ app.post("/modifyBalance", (req, res) => __awaiter(void 0, void 0, void 0, funct
             ? Number(user === null || user === void 0 ? void 0 : user.balance) + Number(amount)
             : Number(user === null || user === void 0 ? void 0 : user.balance) - Number(amount);
         usersCollection.updateOne({ _id: objectId }, { $set: { balance: computation } });
-        res.status(200).json({
-            message: "sent deposit",
-            user: {
-                userID: userID,
-                balance: computation,
-            },
-        });
+        res.status(200).json(user);
     }
     catch (error) {
         console.log("Error modifying balance: ", error);
@@ -334,19 +354,16 @@ app.post("/editBudgetLimit", (req, res) => __awaiter(void 0, void 0, void 0, fun
     try {
         const objectId = new mongodb_1.ObjectId(userID);
         const usersCollection = client.db("MMM").collection("users");
-        let user = yield usersCollection.findOne({ _id: objectId });
+        const user = yield usersCollection.findOne({ _id: objectId });
         if (!user) {
             res.status(401).json({ message: "Invalid user" });
             return;
         }
-        usersCollection.updateOne({ _id: objectId }, { $set: { monthlyLimit: limit } });
-        res.status(200).json({
-            message: "Budget Limit edited successfully",
-            user: {
-                userID: userID,
-                monthlyLimit: limit,
-            },
+        yield usersCollection.updateOne({ _id: objectId }, { $set: { monthlyLimit: limit } });
+        const authenticatedUser = yield usersCollection.findOne({
+            _id: objectId,
         });
+        res.status(200).json(authenticatedUser);
     }
     catch (error) {
         console.log("Error editing budget limit: ", error);

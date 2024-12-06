@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const currentBalance = document.getElementById("current-balance");
   const activeSubs = document.getElementById("active-subs");
+  const expenses = document.getElementById("monthly-expenses");
   const budgetPercentage = document.getElementById("budget-percentage");
   const budgetLimit = document.getElementById("budget-limit");
 
@@ -113,17 +114,18 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(userData);
       currentBalance.innerHTML = `₱${userData.balance}`;
       budgetLimit.innerHTML = `₱${userData.monthlyLimit}`;
-      const budgetUsed =
-        (Number(userData.monthlyLimit) / Number(userData.balance)) * 100;
-      budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+      expenses.innerHTML = `₱${userData.monthlyExpenses}`;
       activeSubs.innerHTML = userData.activeSubs;
+      const budgetUsed =
+        (Number(userData.monthlyExpenses) / Number(userData.monthlyLimit)) *
+        100;
+      budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
     } catch (error) {
       console.error("Error fetching user data: ", error);
     }
   }
 
   async function addSubscription(userID, service, plan) {
-    console.log(userID, service, plan);
     try {
       const res = await fetch("http://localhost:5000/addSubscription", {
         method: "POST",
@@ -131,7 +133,13 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ userID, service, plan }),
       });
       const data = await res.json();
-      activeSubs.innerHTML = Number(data.subCount);
+
+      activeSubs.innerHTML = data.activeSubs;
+      expenses.innerHTML = `₱${data.monthlyExpenses}`;
+      const budgetUsed =
+        (Number(data.monthlyExpenses) / Number(data.monthlyLimit)) * 100;
+      budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+
       subscribeContainer.style.display = "none";
     } catch (error) {
       console.error("Error adding subscription: ", error);
