@@ -464,20 +464,31 @@ app.post("/editBudgetLimit", (req, res) => __awaiter(void 0, void 0, void 0, fun
         const usersCollection = client.db("MMM").collection("users");
         const user = yield usersCollection.findOne({ _id: objectId });
         if (!user) {
+            console.log("Invalid user");
             res.status(401).json({ message: "Invalid user" });
             return;
         }
-        const { monthlyLimit, monthlyExpenses } = user;
+        yield usersCollection.updateOne({ _id: objectId }, { $set: { monthlyLimit: limit } });
+        const authenticatedUser = yield usersCollection.findOne({
+            _id: objectId,
+        });
+        if (!authenticatedUser) {
+            console.log("Invalid user");
+            res.status(401).json({ message: "Invalid user" });
+            return;
+        }
+        const { monthlyLimit, monthlyExpenses } = authenticatedUser;
         if (!monthlyLimit || !monthlyExpenses) {
+            console.log("Monthly data is incomplete");
             res.status(400).json({ message: "User's monthly data is incomplete" });
             return;
         }
         // Calculate budget percentage
         const budgetPercentage = ((monthlyExpenses / monthlyLimit) * 100).toFixed(2);
         const budgetPercentageNumber = parseFloat(budgetPercentage);
-        yield usersCollection.updateOne({ _id: objectId }, { $set: { monthlyLimit: limit } });
         //Notify user if budget is at 80%, 100%, or more
         if (budgetPercentageNumber === 80 || budgetPercentageNumber >= 100) {
+            console.log("Budget Percentage", budgetPercentage);
             const notificationCollection = client
                 .db("MMM")
                 .collection("notifications");
@@ -490,9 +501,6 @@ app.post("/editBudgetLimit", (req, res) => __awaiter(void 0, void 0, void 0, fun
             };
             yield notificationCollection.insertOne(notification);
         }
-        const authenticatedUser = yield usersCollection.findOne({
-            _id: objectId,
-        });
         res.status(200).json(authenticatedUser);
     }
     catch (error) {

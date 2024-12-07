@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         `http://localhost:5000/getNotifications/${userID}`,
         { method: "GET", headers: { "Content-Type": "application/json" } }
       );
-      const notifications = await res.json();
+      const data = await res.json();
+      const notifications = data.sort().reverse();
       console.log(notifications);
 
       // Clear sub list
@@ -67,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           } else {
             h5.textContent = `You have used ${notification.budgetPercentage}% of your set budget!`;
             p.textContent = `Your monthly expenses have reached ${notification.budgetPercentage}% of your set budget limit per month.
-Consider the services and plans you are interested to not exceed 100%.`;
+                            Consider the services and plans you are interested to not exceed 100%.`;
             h6.textContent = `WARNING`;
           }
 
