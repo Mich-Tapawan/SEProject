@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const loginEmail = document.getElementById("login-email");
   const loginPassword = document.getElementById("login-password");
+  const errorText = document.getElementById("error-text");
 
   document.querySelector("#signup").addEventListener("click", () => {
     event.preventDefault();
@@ -9,8 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelector("#login").addEventListener("click", () => {
     event.preventDefault();
+
+    // Shows error message for 4 seconds if empty input field
     if (loginEmail.value == "" && loginPassword.value == "") {
-      //Dito kayo mag edit ng alert code
+      errorText.innerHTML = "Please fill out all required fields to login.";
+      setTimeout(() => (errorText.innerHTML = ""), 4000);
       return;
     } else {
       logIn(loginEmail.value, loginPassword.value);

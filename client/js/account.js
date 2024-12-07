@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         subscriptionsSection.style.display = "none";
       } else if (sec === "logout") {
         localStorage.setItem("userID", "");
+        localStorage.setItem("userBalance", "");
         window.location.href = "/client/index.html";
       }
     };

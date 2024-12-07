@@ -105,8 +105,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   cardNext.addEventListener("click", () => {
     let isCardInputComplete = true;
     cardInputs.forEach((input) => {
-      if (input.value == "") isCardInputComplete = false;
-      return;
+      if (input.value == "") {
+        isCardInputComplete = false;
+        return;
+      }
     });
     if (isCardInputComplete) {
       walletInfo = {
@@ -122,14 +124,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       inquiry == "deposit"
         ? (depositContainer.style.display = "flex")
         : (transferContainer.style.display = "flex");
+    } else {
+      alert("Please fill out all of the input fields.");
+      return;
     }
   });
 
   mobileNext.addEventListener("click", () => {
     let isMobileInputComplete = true;
     mobileInputs.forEach((input) => {
-      if (input.value == "") isMobileInputComplete = false;
-      return;
+      if (input.value === "") {
+        isMobileInputComplete = false;
+      } else if (
+        isNaN(input.value) ||
+        Number(input.value) <= 0 ||
+        input.value.length !== 11
+      ) {
+        isMobileInputComplete = false;
+      }
     });
 
     if (isMobileInputComplete) {
@@ -144,6 +156,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       inquiry == "deposit"
         ? (depositContainer.style.display = "flex")
         : (transferContainer.style.display = "flex");
+    } else {
+      alert(
+        "Please only enter appropriate mobile number format ( Ex. 09123456789)"
+      );
+      return;
     }
   });
 
@@ -157,6 +174,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   depositSubmit.addEventListener("click", () => {
     if (depositAmount.value == "") {
+      alert("Please enter a valid amount to deposit.");
+      return;
+    } else if (isNaN(depositAmount.value) || Number(depositAmount.value) <= 0) {
+      alert("Invalid input. Please only enter a positive numerical value.");
       return;
     }
 
@@ -164,7 +185,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   transferSubmit.addEventListener("click", () => {
+    const data = localStorage.getItem("userBalance");
+    const userBalance = JSON.parse(data);
     if (transferAmount.value == "") {
+      alert("Please enter a valid amount to transfer.");
+      return;
+    } else if (
+      isNaN(transferAmount.value) ||
+      Number(transferAmount.value) <= 0
+    ) {
+      alert("Invalid input. Please only enter a positive numerical value.");
+      return;
+    } else if (userBalance < transferAmount.value) {
+      alert("Insufficient balance to transfer this amount.");
       return;
     }
     modifyBalance(walletInfo, user._id, transferAmount.value, "transfer");
@@ -229,9 +262,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         headers: { "Content-Type": "application/json" },
       });
       const userData = await res.json();
-
       console.log(userData);
+
       currentBalance.innerHTML = `₱${userData.balance}`;
+      localStorage.setItem("userBalance", userData.balance);
+
       budgetLimit.innerHTML = `₱${userData.monthlyLimit}`;
       const budgetUsed =
         (Number(userData.monthlyExpenses) / Number(userData.monthlyLimit)) *
@@ -316,6 +351,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log(data);
 
       currentBalance.innerHTML = `₱${data.balance}`;
+      localStorage.setItem("userBalance", data.balance);
 
       depositContainer.style.display = "none";
       transferContainer.style.display = "none";

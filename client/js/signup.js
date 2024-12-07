@@ -42,6 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
         city: city.value,
       };
       sendUserData(userInfoContent);
+    } else {
+      alert("Please fill out all required fields before registering.");
     }
   });
 

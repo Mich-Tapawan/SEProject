@@ -287,6 +287,7 @@ label {
   background-color: #0d0d1b;
   color: #fff;
   font-weight: bold;
+  cursor: pointer;
 }
 #exit-deposit,
 #exit-transfer {

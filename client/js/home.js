@@ -98,15 +98,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   subscribeBtn.addEventListener("click", () => {
+    // Checks if the user have not selected a plan or has insufficient balance to subscribe
+    const data = localStorage.getItem("userBalance");
+    const userBalance = JSON.parse(data);
+    const selectedValue = selectPlan.value.split(" - ");
     if (selectPlan.value === "") {
+      alert("Please select a subscription plan.");
+      return;
+    } else if (Number(selectedValue[1]) > userBalance) {
+      alert("Insufficient balance to subscribe to this plan.");
       return;
     }
     addSubscription(user._id, clickedSub, selectPlan.value);
   });
 
   async function loadData(userID) {
-    console.log(userID);
-
     try {
       const res = await fetch(`http://localhost:5000/getUserData/${userID}`, {
         method: "GET",
