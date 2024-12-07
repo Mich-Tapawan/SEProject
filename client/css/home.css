@@ -233,6 +233,28 @@ body {
   margin-bottom: 1rem;
 }
 
+.confirmation-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  flex-direction: column;
+  padding: 2rem 4rem;
+  background-color: #fff;
+  color: var(--dark);
+  font-weight: bold;
+}
+
+.confirmation-box button {
+  height: 2.4rem;
+  background-color: #ff2575;
+  border: 0;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
 /* @media (max-width: 1536px) {
   .balance p {
     font-weight: bold;

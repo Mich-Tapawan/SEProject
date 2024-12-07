@@ -112,6 +112,14 @@ document.addEventListener("DOMContentLoaded", () => {
     addSubscription(user._id, clickedSub, selectPlan.value);
   });
 
+  // Pop up after successfully subscribing
+  const confirmationBox = document.querySelector(".confirmation-box");
+  const confirmationButton = document.getElementById("okay");
+
+  confirmationButton.addEventListener("click", () => {
+    confirmationBox.style.display = "none";
+  });
+
   async function loadData(userID) {
     try {
       const res = await fetch(`http://localhost:5000/getUserData/${userID}`, {
@@ -151,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
       budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
 
       subscribeContainer.style.display = "none";
+      confirmationBox.style.display = "flex";
     } catch (error) {
       console.error("Error adding subscription: ", error);
     }
