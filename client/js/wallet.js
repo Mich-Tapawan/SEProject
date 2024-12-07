@@ -248,6 +248,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         `http://localhost:5000/removeSubscription/${subscriptionID}`,
         { method: "DELETE", headers: { "Content-Type": "application/json" } }
       );
+      const data = await res.json();
+      console.log(data);
+      const budgetUsed =
+        (Number(data.monthlyExpenses) / Number(data.monthlyLimit)) * 100;
+      budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+
       confirmationContainer.style.display = "none";
     } catch (error) {
       console.error("Error removing subscription ", error);
@@ -265,7 +271,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log(userData);
 
       currentBalance.innerHTML = `₱${userData.balance}`;
-      localStorage.setItem("userBalance", userData.balance);
 
       budgetLimit.innerHTML = `₱${userData.monthlyLimit}`;
       const budgetUsed =

@@ -570,8 +570,20 @@ app.delete("/removeSubscription/:id", (req, res) => __awaiter(void 0, void 0, vo
         const subscriptionCollection = client
             .db("MMM")
             .collection("subscriptions");
+        // update user monthly limit and expenses to update budget used percentage
+        const usersCollection = client.db("MMM").collection("users");
+        const subscription = yield subscriptionCollection.findOne({
+            _id: objectId,
+        });
+        const userID = new mongodb_1.ObjectId(subscription === null || subscription === void 0 ? void 0 : subscription.userID);
+        yield usersCollection.updateOne({ _id: userID }, { $set: {} });
+        const user = yield usersCollection.findOne({ _id: userID });
+        console.log(subscription, userID, user === null || user === void 0 ? void 0 : user.monthlyExpenses, user === null || user === void 0 ? void 0 : user.monthlyLimit);
         yield subscriptionCollection.deleteOne({ _id: objectId });
-        res.status(200).json(`Successfully removed subscription ${data}`);
+        res.status(200).json({
+            monthlyExpenses: user === null || user === void 0 ? void 0 : user.monthlyExpenses,
+            monthlyLimit: user === null || user === void 0 ? void 0 : user.monthlyLimit,
+        });
     }
     catch (error) {
         console.error("Error getting notification", error);

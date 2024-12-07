@@ -722,9 +722,29 @@ app.delete(
         .db("MMM")
         .collection("subscriptions");
 
+      // update user monthly limit and expenses to update budget used percentage
+      const usersCollection = client.db("MMM").collection("users");
+      const subscription = await subscriptionCollection.findOne({
+        _id: objectId,
+      });
+      const userID = new ObjectId(subscription?.userID);
+
+      await usersCollection.updateOne({ _id: userID }, { $set: {} });
+      const user = await usersCollection.findOne({ _id: userID });
+
+      console.log(
+        subscription,
+        userID,
+        user?.monthlyExpenses,
+        user?.monthlyLimit
+      );
+
       await subscriptionCollection.deleteOne({ _id: objectId });
 
-      res.status(200).json(`Successfully removed subscription ${data}`);
+      res.status(200).json({
+        monthlyExpenses: user?.monthlyExpenses,
+        monthlyLimit: user?.monthlyLimit,
+      });
     } catch (error) {
       console.error("Error getting notification", error);
       res.status(500).json({ message: "Error getting notification" });
