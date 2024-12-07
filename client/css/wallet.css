@@ -345,3 +345,37 @@ label {
   background-color: var(--dark);
   color: #fff;
 }
+
+.confirm-cancel-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  flex-direction: column;
+  background-color: #fff;
+  color: #0d0d1b;
+  font-size: 1.1rem;
+  padding: 3rem 4rem;
+  gap: 1rem;
+}
+
+.confirm-cancel-container button {
+  font-weight: bold;
+  font-size: 1.1rem;
+  height: 3.5rem;
+  cursor: pointer;
+}
+
+#remove-confirm-btn {
+  background-color: #0d0d1b;
+  color: #fff;
+}
+#remove-confirm-btn:hover {
+  background-color: #27273a;
+}
+
+#remove-return-btn {
+  background-color: #fff;
+  color: #0d0d1b;
+}

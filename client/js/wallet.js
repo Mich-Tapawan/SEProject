@@ -170,17 +170,56 @@ document.addEventListener("DOMContentLoaded", async () => {
     modifyBalance(walletInfo, user._id, transferAmount.value, "transfer");
   });
 
-  //Remove Wallet
-  const removeBtn = document.getElementById("remove");
-  removeBtn.addEventListener("click", () => {
+  //Remove or Cancel selected subscription
+  const confirmationContainer = document.querySelector(
+    ".confirm-cancel-container"
+  );
+  const cancelSubBtn = document.getElementById("remove");
+  const removeConfirm = document.getElementById("remove-confirm-btn");
+  const removeCancel = document.getElementById("remove-return-btn");
+
+  removeConfirm.addEventListener("click", () => {
     // Convert the children to an array and iterate over them
     Array.from(subList.children).forEach((item) => {
-      if (item.classList.contains("selected-wallet")) {
+      if (item.classList.contains("selected-subscription")) {
         subList.removeChild(item);
-        removeWallet(item.dataset.value);
+        removeSubscription(item.dataset.value);
       }
     });
   });
+
+  cancelSubBtn.addEventListener("click", () => {
+    // Checks each item in the list to locate the selected subscription
+    let isSelected = false;
+    Array.from(subList.children).forEach((item) => {
+      if (item.classList.contains("selected-subscription")) {
+        isSelected = true;
+        return;
+      }
+    });
+
+    if (isSelected) {
+      confirmationContainer.style.display = "flex";
+    } else {
+      alert("No selected item. Please click on a subscription first.");
+    }
+  });
+
+  removeCancel.addEventListener("click", () => {
+    confirmationContainer.style.display = "none";
+  });
+
+  async function removeSubscription(subscriptionID) {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/removeSubscription/${subscriptionID}`,
+        { method: "DELETE", headers: { "Content-Type": "application/json" } }
+      );
+      confirmationContainer.style.display = "none";
+    } catch (error) {
+      console.error("Error removing subscription ", error);
+    }
+  }
 
   async function loadData(userID) {
     console.log(userID);
@@ -239,7 +278,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           span.textContent = `Expiration: ${sub.end}`;
           lower.append(p, span);
 
-          li.setAttribute("data-value", sub.userID);
+          li.setAttribute("data-value", sub._id);
 
           li.appendChild(upper);
           li.appendChild(lower);

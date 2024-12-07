@@ -549,4 +549,34 @@ app.get("/getNotifications/:id", (req, res) => __awaiter(void 0, void 0, void 0,
         return;
     }
 }));
+// Remove or Cancel selected subscription
+app.delete("/removeSubscription/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = req.params.id;
+    console.log("subscription ID", data);
+    if (!data) {
+        console.log("Subscription ID is missing");
+        res.status(400).json({ message: "Subscription is missing" });
+        return;
+    }
+    // Validate the userID format
+    if (!mongodb_1.ObjectId.isValid(data)) {
+        console.log("Invalid Subscription ID format");
+        res.status(400).json({ message: "Invalid Subscription ID format" });
+        return;
+    }
+    try {
+        // Convert userID to MongoDB ObjectId
+        const objectId = new mongodb_1.ObjectId(data);
+        const subscriptionCollection = client
+            .db("MMM")
+            .collection("subscriptions");
+        yield subscriptionCollection.deleteOne({ _id: objectId });
+        res.status(200).json(`Successfully removed subscription ${data}`);
+    }
+    catch (error) {
+        console.error("Error getting notification", error);
+        res.status(500).json({ message: "Error getting notification" });
+        return;
+    }
+}));
 app.listen(5000, () => console.log("Server running at PORT 5000"));
