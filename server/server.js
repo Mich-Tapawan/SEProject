@@ -47,6 +47,69 @@ const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+// fetch expiring subscriptions and insert notifications
+const checkExpiringSubscriptions = (db) => __awaiter(void 0, void 0, void 0, function* () {
+    const today = new Date();
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+    // Format dates as ISO strings
+    const todayISO = today.toISOString().split("T")[0];
+    const nextWeekISO = nextWeek.toISOString().split("T")[0];
+    const tomorrowISO = tomorrow.toISOString().split("T")[0];
+    const subscriptionCollection = db.collection("subscriptions");
+    const notificationCollection = db.collection("notifications");
+    // Find subscriptions expiring within the next 7 days
+    const expiringSubscriptions = yield subscriptionCollection
+        .find({
+        end: {
+            $gte: todayISO,
+            $lte: nextWeekISO,
+        },
+    })
+        .toArray();
+    // Process the subscriptions and create notifications
+    if (expiringSubscriptions.length > 0) {
+        for (const sub of expiringSubscriptions) {
+            const endDate = new Date(sub.end);
+            const daysLeft = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+            // Only notify if 7 days or 1 day left
+            if (daysLeft === 1 || daysLeft <= 7) {
+                const notification = {
+                    service: sub.service,
+                    price: sub.price,
+                    plan: sub.type,
+                    userID: sub.userID,
+                    daysLeft: daysLeft,
+                    dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+                    alert: "expiration",
+                };
+                // Check if a notification already exists for this user and subscription
+                const existingNotification = yield notificationCollection.findOne({
+                    userID: sub.userID,
+                    service: sub.service,
+                    plan: sub.type,
+                });
+                if (!existingNotification) {
+                    yield notificationCollection.insertOne(notification);
+                }
+                else {
+                    console.log("All expiring subscriptions are stored");
+                }
+            }
+        }
+    }
+    else {
+        console.log("No current expiring subscriptions");
+    }
+});
+// Schedule the job to run periodically (every minute)
+setInterval(() => {
+    console.log("Watching");
+    const db = client.db("MMM");
+    checkExpiringSubscriptions(db).catch(console.error);
+}, 60 * 1000); // Every minute
 // User Log In
 app.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
@@ -185,7 +248,7 @@ app.get("/getUserData/:id", (req, res) => __awaiter(void 0, void 0, void 0, func
         return;
     }
 }));
-// Subscription Handler
+// Get subscription list
 app.get("/getSubscriptions/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userID = req.params.id;
     if (!userID) {
@@ -200,9 +263,46 @@ app.get("/getSubscriptions/:id", (req, res) => __awaiter(void 0, void 0, void 0,
         return;
     }
     try {
-        //Convert userID to MongoDB ObjectId
+        // Convert userID to MongoDB ObjectId
         const objectId = new mongodb_1.ObjectId(userID);
         const subCollection = client.db("MMM").collection("subscriptions");
+        // Get the current date
+        const currentDate = new Date();
+        const currentDateString = currentDate.toISOString().split("T")[0]; // "yyyy-mm-dd"
+        // Find subscriptions that have expired
+        const expiredSubscriptions = yield subCollection
+            .find({
+            userID: objectId,
+            end: { $lt: currentDateString }, // Compare as strings
+        })
+            .toArray();
+        console.log("Expired subscriptions:", expiredSubscriptions);
+        // Add expiration notification
+        const notificationCollection = client
+            .db("MMM")
+            .collection("notifications");
+        if (expiredSubscriptions.length > 0) {
+            const today = new Date();
+            expiredSubscriptions.forEach((expiredSubscription) => {
+                const notification = {
+                    service: expiredSubscription.service,
+                    price: expiredSubscription.price,
+                    plan: expiredSubscription.type,
+                    userID: expiredSubscription.userID,
+                    daysLeft: "Expired",
+                    dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+                    alert: "expired",
+                };
+                notificationCollection.insertOne(notification);
+            });
+            // Remove expired subscriptions from the collection
+            yield subCollection.deleteMany({
+                userID: objectId,
+                end: { $lt: currentDateString }, // Compare as strings
+            });
+            console.log(`Removed ${expiredSubscriptions.length} expired subscriptions for user ${userID}`);
+        }
+        // Now, fetch all active subscriptions (not expired)
         const subscriptions = yield subCollection
             .find({ userID: objectId })
             .toArray();
@@ -211,7 +311,7 @@ app.get("/getSubscriptions/:id", (req, res) => __awaiter(void 0, void 0, void 0,
             console.log("User has no registered subscription");
             res
                 .status(400)
-                .json({ message: "User has no registered subscriptions=" });
+                .json({ message: "User has no registered subscriptions" });
             return;
         }
         else {
@@ -269,6 +369,21 @@ app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, fun
         });
         const usersCollection = client.db("MMM").collection("users");
         yield usersCollection.updateOne({ _id: objectId }, { $set: { activeSubs: subCount } });
+        // Notify user for subscription activation
+        const notificationCollection = client
+            .db("MMM")
+            .collection("notifications");
+        const today = new Date();
+        const notification = {
+            service: service,
+            price: price,
+            plan: type,
+            userID: objectId,
+            daysLeft: "Activated",
+            dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+            alert: "activated",
+        };
+        notificationCollection.insertOne(notification);
         console.log("Sub Count: ", subCount);
         // Get total monthly expenses for all active services
         const getSubs = subscriptionCollection.find({ userID: objectId });
@@ -352,7 +467,29 @@ app.post("/editBudgetLimit", (req, res) => __awaiter(void 0, void 0, void 0, fun
             res.status(401).json({ message: "Invalid user" });
             return;
         }
+        const { monthlyLimit, monthlyExpenses } = user;
+        if (!monthlyLimit || !monthlyExpenses) {
+            res.status(400).json({ message: "User's monthly data is incomplete" });
+            return;
+        }
+        // Calculate budget percentage
+        const budgetPercentage = ((monthlyExpenses / monthlyLimit) * 100).toFixed(2);
+        const budgetPercentageNumber = parseFloat(budgetPercentage);
         yield usersCollection.updateOne({ _id: objectId }, { $set: { monthlyLimit: limit } });
+        //Notify user if budget is at 80%, 100%, or more
+        if (budgetPercentageNumber === 80 || budgetPercentageNumber >= 100) {
+            const notificationCollection = client
+                .db("MMM")
+                .collection("notifications");
+            const today = new Date();
+            const notification = {
+                userID: objectId,
+                budgetPercentage: budgetPercentageNumber,
+                dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+                alert: "warning",
+            };
+            yield notificationCollection.insertOne(notification);
+        }
         const authenticatedUser = yield usersCollection.findOne({
             _id: objectId,
         });
@@ -361,6 +498,46 @@ app.post("/editBudgetLimit", (req, res) => __awaiter(void 0, void 0, void 0, fun
     catch (error) {
         console.log("Error editing budget limit: ", error);
         res.status(400).json({ message: "Error editing budget limit" });
+        return;
+    }
+}));
+// Send Notification List
+app.get("/getNotifications/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userID = req.params.id;
+    console.log(userID);
+    if (!userID) {
+        console.log("User ID is missing");
+        res.status(400).json({ message: "User ID is missing" });
+        return;
+    }
+    // Validate the userID format
+    if (!mongodb_1.ObjectId.isValid(userID)) {
+        console.log("Invalid User ID format");
+        res.status(400).json({ message: "Invalid User ID format" });
+        return;
+    }
+    try {
+        // Convert userID to MongoDB ObjectId
+        const objectId = new mongodb_1.ObjectId(userID);
+        const notificationCollection = client
+            .db("MMM")
+            .collection("notifications");
+        const notifications = yield notificationCollection
+            .find({ userID: objectId })
+            .toArray();
+        console.log(notifications);
+        if (notifications.length < 1) {
+            console.log("User has no current notification");
+            res.status(400).json({ message: "User has no current notification" });
+            return;
+        }
+        else {
+            res.status(200).json(notifications);
+        }
+    }
+    catch (error) {
+        console.error("Error getting notification", error);
+        res.status(500).json({ message: "Error getting notification" });
         return;
     }
 }));

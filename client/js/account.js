@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
         detailsSection.style.display = "block";
         subscriptionsSection.style.display = "none";
       } else if (sec === "logout") {
-        localStorage.setItem("userData", "");
+        localStorage.setItem("userID", "");
         window.location.href = "/client/index.html";
       }
     };

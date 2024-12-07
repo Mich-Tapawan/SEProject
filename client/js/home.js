@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       name: "Disney+",
-      src: "/client/assets/disney.png",
+      src: "/client/assets/disney+.png",
       plan: ["Mobile - 159", "Premium - 369"],
     },
     {
