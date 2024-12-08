@@ -459,16 +459,12 @@ app.post(
         .collection("subscriptions");
       const [type, price] = plan.split(" - ");
 
-      // Get start date
+      // Get start and end dates
       const startDate = new Date();
-      const formattedStartDate = startDate
-        .toLocaleDateString("en-CA")
-        .replace(/\//g, "-"); // Converts current date to yyyy-mm-dd format
-
-      // Get end date
+      const formattedStartDate = startDate.toISOString().split("T")[0]; // yyyy-mm-dd
       const nextMonthDate = new Date(startDate);
       nextMonthDate.setMonth(startDate.getMonth() + 1);
-      const formattedNextMonthDate = nextMonthDate.toLocaleDateString("en-CA");
+      const formattedNextMonthDate = nextMonthDate.toISOString().split("T")[0];
 
       console.log(type, price, formattedStartDate, formattedNextMonthDate);
 
@@ -499,7 +495,7 @@ app.post(
 
       const today = new Date();
 
-      const notification: Notification = {
+      const activationNotification: Notification = {
         service: service,
         price: price,
         plan: type,
@@ -508,7 +504,8 @@ app.post(
         dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
         alert: "activated",
       };
-      notificationCollection.insertOne(notification);
+      await notificationCollection.insertOne(activationNotification);
+
       console.log("Sub Count: ", subCount);
 
       // Get total monthly expenses for all active services
@@ -520,14 +517,37 @@ app.post(
 
       // Subtract price from current wallet balance
       const user = await usersCollection.findOne({ _id: objectId });
-      const updatedBalance = user?.balance - price;
-      console.log("updated balance: ", monthlyExpenses);
+      const updatedBalance = user?.balance - parseFloat(price);
+      console.log("updated balance: ", updatedBalance);
 
       // Update user monthlyExpenses
       await usersCollection.updateOne(
         { _id: objectId },
         { $set: { monthlyExpenses: monthlyExpenses, balance: updatedBalance } }
       );
+
+      // Notify user if budget is at 80% or more
+      const monthlyLimit = user?.monthlyLimit;
+
+      if (monthlyLimit && monthlyExpenses) {
+        const budgetPercentage = (
+          (monthlyExpenses / monthlyLimit) *
+          100
+        ).toFixed(2);
+        const budgetPercentageNumber = parseFloat(budgetPercentage);
+
+        if (budgetPercentageNumber >= 80) {
+          console.log("Budget Percentage", budgetPercentage);
+          const budgetNotification: Notification = {
+            userID: objectId,
+            budgetPercentage: budgetPercentageNumber,
+            dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+            alert: "warning",
+          };
+
+          await notificationCollection.insertOne(budgetNotification);
+        }
+      }
 
       const authenticatedUser = await usersCollection.findOne({
         _id: objectId,
@@ -652,8 +672,8 @@ app.post(
       );
       const budgetPercentageNumber = parseFloat(budgetPercentage);
 
-      //Notify user if budget is at 80%, 100%, or more
-      if (budgetPercentageNumber === 80 || budgetPercentageNumber >= 100) {
+      //Notify user if budget is at 80% or more
+      if (budgetPercentageNumber >= 80) {
         console.log("Budget Percentage", budgetPercentage);
         const notificationCollection = client
           .db("MMM")

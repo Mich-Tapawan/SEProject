@@ -112,12 +112,18 @@ document.addEventListener("DOMContentLoaded", () => {
     addSubscription(user._id, clickedSub, selectPlan.value);
   });
 
-  // Pop up after successfully subscribing
+  // Pop up after successfully subscribing or exceeding budget limit
   const confirmationBox = document.querySelector(".confirmation-box");
   const confirmationButton = document.getElementById("okay");
+  const warningBox = document.querySelector(".warning-box");
+  const warningButton = document.querySelector(".warning-box button");
 
   confirmationButton.addEventListener("click", () => {
     confirmationBox.style.display = "none";
+  });
+
+  warningButton.addEventListener("click", () => {
+    warningBox.style.display = "none";
   });
 
   async function loadData(userID) {
@@ -129,6 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const userData = await res.json();
 
       console.log(userData);
+      localStorage.setItem("userBalance", userData.balance);
       currentBalance.innerHTML = `₱${userData.balance}`;
       budgetLimit.innerHTML = `₱${userData.monthlyLimit}`;
       expenses.innerHTML = `₱${userData.monthlyExpenses}`;
@@ -137,6 +144,12 @@ document.addEventListener("DOMContentLoaded", () => {
         (Number(userData.monthlyExpenses) / Number(userData.monthlyLimit)) *
         100;
       budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+      if (budgetUsed >= 100) {
+        budgetPercentage.style.color = "#ff2575";
+        warningBox.style.display = "flex";
+      } else {
+        budgetPercentage.style.color = "#fff";
+      }
     } catch (error) {
       console.error("Error fetching user data: ", error);
     }
@@ -157,6 +170,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const budgetUsed =
         (Number(data.monthlyExpenses) / Number(data.monthlyLimit)) * 100;
       budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+
+      if (budgetUsed >= 100) {
+        budgetPercentage.style.color = "#ff2575";
+        warningBox.style.display = "flex";
+      } else {
+        budgetPercentage.style.color = "#fff";
+      }
 
       subscribeContainer.style.display = "none";
       confirmationBox.style.display = "flex";

@@ -13,8 +13,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         `http://localhost:5000/getNotifications/${userID}`,
         { method: "GET", headers: { "Content-Type": "application/json" } }
       );
-      const data = await res.json();
-      const notifications = data.sort().reverse();
+      let notifications = await res.json();
+      if (notifications.length > 0) {
+        notifications = notifications.sort().reverse();
+      }
       console.log(notifications);
 
       // Clear sub list
@@ -85,6 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           notificationList.appendChild(li);
         });
       } else {
+        notificationList.style.display = "none";
         console.error("No subscriptions found or invalid data format");
       }
     } catch (error) {
