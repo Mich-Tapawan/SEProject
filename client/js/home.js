@@ -143,7 +143,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const budgetUsed =
         (Number(userData.monthlyExpenses) / Number(userData.monthlyLimit)) *
         100;
-      budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+
+      if (isNaN(budgetUsed)) {
+        budgetPercentage.innerHTML = `0%`;
+      } else {
+        budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+      }
+
       if (budgetUsed >= 100) {
         budgetPercentage.style.color = "#ff2575";
         warningBox.style.display = "flex";
@@ -157,6 +163,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function addSubscription(userID, service, plan) {
     try {
+      if (budgetLimit.innerHTML === "₱0") {
+        return;
+      }
+
       const res = await fetch("http://localhost:5000/addSubscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

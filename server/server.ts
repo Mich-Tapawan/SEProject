@@ -225,12 +225,7 @@ app.post("/signup", async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    res.status(200).json({
-      message: "Signup successful",
-      user: {
-        _id: user._id,
-      },
-    });
+    res.status(200).json({ _id: user._id });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -709,8 +704,12 @@ app.post(
 
       const { monthlyLimit, monthlyExpenses } = authenticatedUser;
 
-      if (!monthlyLimit || !monthlyExpenses) {
-        console.log("Monthly data is incomplete");
+      if (!monthlyLimit || monthlyExpenses === null) {
+        console.log(
+          "Monthly data is incomplete: ",
+          monthlyLimit,
+          monthlyExpenses
+        );
         res.status(400).json({ message: "User's monthly data is incomplete" });
         return;
       }

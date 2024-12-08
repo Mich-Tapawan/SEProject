@@ -61,7 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("userID", JSON.stringify(data));
 
       if (!response.ok) {
-        console.error("Error signing up", error);
+        alert("This email already exists. Login or use a different email.");
+        console.error("Error signing up");
         return;
       }
       window.location.href = "/client/pages/home.html";

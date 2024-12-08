@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
 
     // Shows error message for 4 seconds if empty input field
-    if (loginEmail.value == "" && loginPassword.value == "") {
+    if (loginEmail.value == "" || loginPassword.value == "") {
       errorText.innerHTML = "Please fill out all required fields to login.";
       setTimeout(() => (errorText.innerHTML = ""), 4000);
       return;

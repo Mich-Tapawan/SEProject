@@ -183,12 +183,7 @@ app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             res.status(404).json("User does not exist");
             return;
         }
-        res.status(200).json({
-            message: "Signup successful",
-            user: {
-                _id: user._id,
-            },
-        });
+        res.status(200).json({ _id: user._id });
     }
     catch (error) {
         console.error("Error during login:", error);
@@ -555,8 +550,8 @@ app.post("/editBudgetLimit", (req, res) => __awaiter(void 0, void 0, void 0, fun
             return;
         }
         const { monthlyLimit, monthlyExpenses } = authenticatedUser;
-        if (!monthlyLimit || !monthlyExpenses) {
-            console.log("Monthly data is incomplete");
+        if (!monthlyLimit || monthlyExpenses === null) {
+            console.log("Monthly data is incomplete: ", monthlyLimit, monthlyExpenses);
             res.status(400).json({ message: "User's monthly data is incomplete" });
             return;
         }

@@ -30,6 +30,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   editConfirmBtn.addEventListener("click", () => {
     if (editInput.value === "") {
       return;
+    } else if (Number(editInput.value) < 50) {
+      alert("The minimum Budget Limit must be P50");
+      return;
     }
     editBudgetLimit(user._id, editInput.value);
   });
@@ -276,7 +279,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       const budgetUsed =
         (Number(userData.monthlyExpenses) / Number(userData.monthlyLimit)) *
         100;
-      budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+
+      if (isNaN(budgetUsed)) {
+        budgetPercentage.innerHTML = `0%`;
+      } else {
+        budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+      }
     } catch (error) {
       console.error("Error fetching user data: ", error);
     }
