@@ -60,7 +60,7 @@ interface Notification {
   plan?: string;
   budgetPercentage?: number | string;
   userID: string | ObjectId;
-  daysLeft?: number | "Expired" | "Activated";
+  daysLeft?: any;
   dateNotified: string; // mm/dd/yyyy
   alert: string;
 }
@@ -436,7 +436,8 @@ app.post(
   "/addSubscription",
   async (req: Request, res: Response): Promise<void> => {
     const { userID, service, plan } = req.body;
-    console.log(userID, service, plan);
+
+    console.log("Request received:", { userID, service, plan });
 
     if (!userID || !service || !plan) {
       console.log("Information missing");
@@ -457,74 +458,124 @@ app.post(
       const subscriptionCollection = client
         .db("MMM")
         .collection("subscriptions");
-      const [type, price] = plan.split(" - ");
-
-      // Get start and end dates
-      const startDate = new Date();
-      const formattedStartDate = startDate.toISOString().split("T")[0]; // yyyy-mm-dd
-      const nextMonthDate = new Date(startDate);
-      nextMonthDate.setMonth(startDate.getMonth() + 1);
-      const formattedNextMonthDate = nextMonthDate.toISOString().split("T")[0];
-
-      console.log(type, price, formattedStartDate, formattedNextMonthDate);
-
-      await subscriptionCollection.insertOne({
-        userID: objectId,
-        service: service,
-        type: type,
-        price: price,
-        start: formattedStartDate,
-        end: formattedNextMonthDate,
-      });
-
-      // Count and set Active Subs
-      const subCount = await subscriptionCollection.countDocuments({
-        userID: objectId,
-      });
-
-      const usersCollection = client.db("MMM").collection("users");
-      await usersCollection.updateOne(
-        { _id: objectId },
-        { $set: { activeSubs: subCount } }
-      );
-
-      // Notify user for subscription activation
       const notificationCollection = client
         .db("MMM")
         .collection("notifications");
+      const usersCollection = client.db("MMM").collection("users");
 
-      const today = new Date();
+      const [type, price] = plan.split(" - ");
 
-      const activationNotification: Notification = {
-        service: service,
-        price: price,
-        plan: type,
+      console.log("Downgrade/Upgrade Plan:", { type, price });
+
+      // Check for existing subscription for the service
+      const existingSubscription = await subscriptionCollection.findOne({
         userID: objectId,
-        daysLeft: "Activated",
-        dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
-        alert: "activated",
-      };
-      await notificationCollection.insertOne(activationNotification);
+        service: service,
+      });
 
-      console.log("Sub Count: ", subCount);
+      if (existingSubscription) {
+        console.log("Existing subscription found:", existingSubscription);
 
-      // Get total monthly expenses for all active services
-      const getSubs = subscriptionCollection.find({ userID: objectId });
-      const subscriptions = await getSubs.toArray();
+        // Determine if it's an upgrade or downgrade
+        const currentPrice = parseFloat(existingSubscription.price || "0");
+        const newPrice = parseFloat(price);
+
+        if (currentPrice === newPrice) {
+          // Duplicate service - no change
+          console.log("Duplicate service. Operation not allowed.");
+          res.status(400).json({
+            message: "Service already subscribed with the same plan.",
+          });
+          return;
+        }
+
+        // Update existing subscription for upgrade or downgrade
+        await subscriptionCollection.updateOne(
+          { _id: existingSubscription._id },
+          {
+            $set: {
+              type: type,
+              price: price,
+              start: new Date().toISOString().split("T")[0], // Update start date
+              end: new Date(new Date().setMonth(new Date().getMonth() + 1))
+                .toISOString()
+                .split("T")[0], // Update end date
+            },
+          }
+        );
+
+        console.log(
+          `Subscription ${currentPrice > newPrice ? "downgraded" : "upgraded"}.`
+        );
+
+        // Notify the user about the upgrade/downgrade
+        const notification: Notification = {
+          service: service,
+          price: price,
+          plan: type,
+          userID: objectId,
+          daysLeft: currentPrice > newPrice ? "Downgraded" : "Upgraded",
+          dateNotified: new Date().toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+          alert: currentPrice > newPrice ? "downgrade" : "upgrade",
+        };
+        await notificationCollection.insertOne(notification);
+      } else {
+        // Insert new subscription
+        const startDate = new Date();
+        const formattedStartDate = startDate.toISOString().split("T")[0]; // yyyy-mm-dd
+        const nextMonthDate = new Date(startDate);
+        nextMonthDate.setMonth(startDate.getMonth() + 1);
+        const formattedNextMonthDate = nextMonthDate
+          .toISOString()
+          .split("T")[0];
+
+        await subscriptionCollection.insertOne({
+          userID: objectId,
+          service: service,
+          type: type,
+          price: price,
+          start: formattedStartDate,
+          end: formattedNextMonthDate,
+        });
+
+        console.log("New subscription added.");
+
+        // Notify user for subscription activation
+        const activationNotification: Notification = {
+          service: service,
+          price: price,
+          plan: type,
+          userID: objectId,
+          daysLeft: "Activated",
+          dateNotified: new Date().toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+          alert: "activated",
+        };
+        await notificationCollection.insertOne(activationNotification);
+      }
+
+      // Recalculate user monthly expenses and active subscriptions
+      const subscriptions = await subscriptionCollection
+        .find({ userID: objectId })
+        .toArray();
       const monthlyExpenses = subscriptions.reduce((total, sub) => {
-        return total + parseFloat(sub.price || 0); // Add subscription price (default to 0 if missing)
+        return total + parseFloat(sub.price || "0"); // Sum all active subscription prices
       }, 0);
 
-      // Subtract price from current wallet balance
       const user = await usersCollection.findOne({ _id: objectId });
       const updatedBalance = user?.balance - parseFloat(price);
-      console.log("updated balance: ", updatedBalance);
 
-      // Update user monthlyExpenses
       await usersCollection.updateOne(
         { _id: objectId },
-        { $set: { monthlyExpenses: monthlyExpenses, balance: updatedBalance } }
+        {
+          $set: {
+            activeSubs: subscriptions.length,
+            monthlyExpenses: monthlyExpenses,
+            balance: updatedBalance,
+          },
+        }
       );
+
+      console.log("User data updated:", { activeSubs: subscriptions.length });
 
       // Notify user if budget is at 80% or more
       const monthlyLimit = user?.monthlyLimit;
@@ -537,14 +588,13 @@ app.post(
         const budgetPercentageNumber = parseFloat(budgetPercentage);
 
         if (budgetPercentageNumber >= 80) {
-          console.log("Budget Percentage", budgetPercentage);
+          console.log("Budget Percentage:", budgetPercentage);
           const budgetNotification: Notification = {
             userID: objectId,
             budgetPercentage: budgetPercentageNumber,
-            dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+            dateNotified: new Date().toLocaleDateString("en-US"), // Format: mm/dd/yyyy
             alert: "warning",
           };
-
           await notificationCollection.insertOne(budgetNotification);
         }
       }
@@ -555,9 +605,8 @@ app.post(
 
       res.status(200).json(authenticatedUser);
     } catch (error) {
-      console.log("Error inserting wallet: ", error);
-      res.status(400).json({ message: "Error inserting wallet" });
-      return;
+      console.error("Error handling subscription:", error);
+      res.status(400).json({ message: "Error handling subscription" });
     }
   }
 );

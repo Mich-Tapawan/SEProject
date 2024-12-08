@@ -346,7 +346,7 @@ app.get("/getSubscriptions/:id", (req, res) => __awaiter(void 0, void 0, void 0,
 // Add Subscription
 app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userID, service, plan } = req.body;
-    console.log(userID, service, plan);
+    console.log("Request received:", { userID, service, plan });
     if (!userID || !service || !plan) {
         console.log("Information missing");
         res.status(400).json({ message: "Information missing" });
@@ -363,56 +363,101 @@ app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, fun
         const subscriptionCollection = client
             .db("MMM")
             .collection("subscriptions");
-        const [type, price] = plan.split(" - ");
-        // Get start and end dates
-        const startDate = new Date();
-        const formattedStartDate = startDate.toISOString().split("T")[0]; // yyyy-mm-dd
-        const nextMonthDate = new Date(startDate);
-        nextMonthDate.setMonth(startDate.getMonth() + 1);
-        const formattedNextMonthDate = nextMonthDate.toISOString().split("T")[0];
-        console.log(type, price, formattedStartDate, formattedNextMonthDate);
-        yield subscriptionCollection.insertOne({
-            userID: objectId,
-            service: service,
-            type: type,
-            price: price,
-            start: formattedStartDate,
-            end: formattedNextMonthDate,
-        });
-        // Count and set Active Subs
-        const subCount = yield subscriptionCollection.countDocuments({
-            userID: objectId,
-        });
-        const usersCollection = client.db("MMM").collection("users");
-        yield usersCollection.updateOne({ _id: objectId }, { $set: { activeSubs: subCount } });
-        // Notify user for subscription activation
         const notificationCollection = client
             .db("MMM")
             .collection("notifications");
-        const today = new Date();
-        const activationNotification = {
-            service: service,
-            price: price,
-            plan: type,
+        const usersCollection = client.db("MMM").collection("users");
+        const [type, price] = plan.split(" - ");
+        console.log("Downgrade/Upgrade Plan:", { type, price });
+        // Check for existing subscription for the service
+        const existingSubscription = yield subscriptionCollection.findOne({
             userID: objectId,
-            daysLeft: "Activated",
-            dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
-            alert: "activated",
-        };
-        yield notificationCollection.insertOne(activationNotification);
-        console.log("Sub Count: ", subCount);
-        // Get total monthly expenses for all active services
-        const getSubs = subscriptionCollection.find({ userID: objectId });
-        const subscriptions = yield getSubs.toArray();
+            service: service,
+        });
+        if (existingSubscription) {
+            console.log("Existing subscription found:", existingSubscription);
+            // Determine if it's an upgrade or downgrade
+            const currentPrice = parseFloat(existingSubscription.price || "0");
+            const newPrice = parseFloat(price);
+            if (currentPrice === newPrice) {
+                // Duplicate service - no change
+                console.log("Duplicate service. Operation not allowed.");
+                res.status(400).json({
+                    message: "Service already subscribed with the same plan.",
+                });
+                return;
+            }
+            // Update existing subscription for upgrade or downgrade
+            yield subscriptionCollection.updateOne({ _id: existingSubscription._id }, {
+                $set: {
+                    type: type,
+                    price: price,
+                    start: new Date().toISOString().split("T")[0], // Update start date
+                    end: new Date(new Date().setMonth(new Date().getMonth() + 1))
+                        .toISOString()
+                        .split("T")[0], // Update end date
+                },
+            });
+            console.log(`Subscription ${currentPrice > newPrice ? "downgraded" : "upgraded"}.`);
+            // Notify the user about the upgrade/downgrade
+            const notification = {
+                service: service,
+                price: price,
+                plan: type,
+                userID: objectId,
+                daysLeft: currentPrice > newPrice ? "Downgraded" : "Upgraded",
+                dateNotified: new Date().toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+                alert: currentPrice > newPrice ? "downgrade" : "upgrade",
+            };
+            yield notificationCollection.insertOne(notification);
+        }
+        else {
+            // Insert new subscription
+            const startDate = new Date();
+            const formattedStartDate = startDate.toISOString().split("T")[0]; // yyyy-mm-dd
+            const nextMonthDate = new Date(startDate);
+            nextMonthDate.setMonth(startDate.getMonth() + 1);
+            const formattedNextMonthDate = nextMonthDate
+                .toISOString()
+                .split("T")[0];
+            yield subscriptionCollection.insertOne({
+                userID: objectId,
+                service: service,
+                type: type,
+                price: price,
+                start: formattedStartDate,
+                end: formattedNextMonthDate,
+            });
+            console.log("New subscription added.");
+            // Notify user for subscription activation
+            const activationNotification = {
+                service: service,
+                price: price,
+                plan: type,
+                userID: objectId,
+                daysLeft: "Activated",
+                dateNotified: new Date().toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+                alert: "activated",
+            };
+            yield notificationCollection.insertOne(activationNotification);
+        }
+        // Recalculate user monthly expenses and active subscriptions
+        const subscriptions = yield subscriptionCollection
+            .find({ userID: objectId })
+            .toArray();
         const monthlyExpenses = subscriptions.reduce((total, sub) => {
-            return total + parseFloat(sub.price || 0); // Add subscription price (default to 0 if missing)
+            return total + parseFloat(sub.price || "0"); // Sum all active subscription prices
         }, 0);
-        // Subtract price from current wallet balance
         const user = yield usersCollection.findOne({ _id: objectId });
         const updatedBalance = (user === null || user === void 0 ? void 0 : user.balance) - parseFloat(price);
-        console.log("updated balance: ", updatedBalance);
-        // Update user monthlyExpenses
-        yield usersCollection.updateOne({ _id: objectId }, { $set: { monthlyExpenses: monthlyExpenses, balance: updatedBalance } });
+        yield usersCollection.updateOne({ _id: objectId }, {
+            $set: {
+                activeSubs: subscriptions.length,
+                monthlyExpenses: monthlyExpenses,
+                balance: updatedBalance,
+            },
+        });
+        console.log("User data updated:", { activeSubs: subscriptions.length });
         // Notify user if budget is at 80% or more
         const monthlyLimit = user === null || user === void 0 ? void 0 : user.monthlyLimit;
         if (monthlyLimit && monthlyExpenses) {
@@ -420,11 +465,11 @@ app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, fun
                 100).toFixed(2);
             const budgetPercentageNumber = parseFloat(budgetPercentage);
             if (budgetPercentageNumber >= 80) {
-                console.log("Budget Percentage", budgetPercentage);
+                console.log("Budget Percentage:", budgetPercentage);
                 const budgetNotification = {
                     userID: objectId,
                     budgetPercentage: budgetPercentageNumber,
-                    dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
+                    dateNotified: new Date().toLocaleDateString("en-US"), // Format: mm/dd/yyyy
                     alert: "warning",
                 };
                 yield notificationCollection.insertOne(budgetNotification);
@@ -436,9 +481,8 @@ app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.status(200).json(authenticatedUser);
     }
     catch (error) {
-        console.log("Error inserting wallet: ", error);
-        res.status(400).json({ message: "Error inserting wallet" });
-        return;
+        console.error("Error handling subscription:", error);
+        res.status(400).json({ message: "Error handling subscription" });
     }
 }));
 // Deposit or Transfer Balance

@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       name: "Netflix",
       src: "/client/assets/netflix.png",
-      plan: ["Mobile - 149", "Basic - 149", "Standard - 459", "Premium - 549"],
+      plan: ["Basic - 249", "Standard - 399", "Premium - 549"],
     },
     {
       name: "Spotify",
@@ -164,22 +164,26 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       const data = await res.json();
 
-      currentBalance.innerHTML = `₱${data.balance}`;
-      activeSubs.innerHTML = data.activeSubs;
-      expenses.innerHTML = `₱${data.monthlyExpenses}`;
-      const budgetUsed =
-        (Number(data.monthlyExpenses) / Number(data.monthlyLimit)) * 100;
-      budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+      if (res.ok) {
+        subscribeContainer.style.display = "none";
+        confirmationBox.style.display = "flex";
 
-      if (budgetUsed >= 100) {
-        budgetPercentage.style.color = "#ff2575";
-        warningBox.style.display = "flex";
+        currentBalance.innerHTML = `₱${data.balance}`;
+        activeSubs.innerHTML = data.activeSubs;
+        expenses.innerHTML = `₱${data.monthlyExpenses}`;
+        const budgetUsed =
+          (Number(data.monthlyExpenses) / Number(data.monthlyLimit)) * 100;
+        budgetPercentage.innerHTML = `${Math.ceil(budgetUsed)}%`;
+
+        if (budgetUsed >= 100) {
+          budgetPercentage.style.color = "#ff2575";
+          warningBox.style.display = "flex";
+        } else {
+          budgetPercentage.style.color = "#fff";
+        }
       } else {
-        budgetPercentage.style.color = "#fff";
+        alert("You are already subscribed to this Plan.");
       }
-
-      subscribeContainer.style.display = "none";
-      confirmationBox.style.display = "flex";
     } catch (error) {
       console.error("Error adding subscription: ", error);
     }
