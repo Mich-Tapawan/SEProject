@@ -509,9 +509,9 @@ app.post(
           price: price,
           plan: type,
           userID: objectId,
-          daysLeft: currentPrice > newPrice ? "Downgraded" : "Upgraded",
+          daysLeft: "Activated",
           dateNotified: new Date().toLocaleDateString("en-US"), // Format: mm/dd/yyyy
-          alert: currentPrice > newPrice ? "downgrade" : "upgrade",
+          alert: "activated",
         };
         await notificationCollection.insertOne(notification);
       } else {

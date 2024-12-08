@@ -400,9 +400,9 @@ app.post("/addSubscription", (req, res) => __awaiter(void 0, void 0, void 0, fun
                 price: price,
                 plan: type,
                 userID: objectId,
-                daysLeft: currentPrice > newPrice ? "Downgraded" : "Upgraded",
+                daysLeft: "Activated",
                 dateNotified: new Date().toLocaleDateString("en-US"), // Format: mm/dd/yyyy
-                alert: currentPrice > newPrice ? "downgrade" : "upgrade",
+                alert: "activated",
             };
             yield notificationCollection.insertOne(notification);
         }

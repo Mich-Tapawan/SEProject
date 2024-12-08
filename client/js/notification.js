@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       );
       let notifications = await res.json();
       if (notifications.length > 0) {
-        notifications = notifications.sort().reverse();
+        notifications = reverseListGreedy(notifications);
       }
       console.log(notifications);
 
@@ -93,5 +93,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (error) {
       console.error("Error fetching notifications: ", error);
     }
+  }
+
+  //Greedy Algorithm
+  function reverseListGreedy(list) {
+    for (let i = 0, j = list.length - 1; i < j; i++, j--) {
+      [list[i], list[j]] = [list[j], list[i]]; // Swap elements
+    }
+    return list;
   }
 });

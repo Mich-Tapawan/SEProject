@@ -217,12 +217,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   removeConfirm.addEventListener("click", () => {
     // Convert the children to an array and iterate over them
-    Array.from(subList.children).forEach((item) => {
-      if (item.classList.contains("selected-subscription")) {
-        subList.removeChild(item);
-        removeSubscription(item.dataset.value);
-      }
-    });
+    removeSelectedItemsDP(subList);
   });
 
   cancelSubBtn.addEventListener("click", () => {
@@ -303,7 +298,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const data = await response.json();
       console.log(data);
 
-      const subData = data.subscriptions;
+      // Divide and Conquer
+      const subData = reverseListDivideAndConquer(data.subscriptions);
       currentBalance.innerHTML = `₱${data.updatedBalance}`;
 
       //Clear sub list
@@ -398,5 +394,47 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (error) {
       console.error("Error editing budget limit: ", error);
     }
+  }
+
+  // Dynamic Programming
+  function removeSelectedItemsDP(subList) {
+    const children = Array.from(subList.children);
+    const dp = new Array(children.length).fill(false); // DP table to mark items to remove
+
+    // Fill the DP table
+    for (let i = 0; i < children.length; i++) {
+      if (children[i].classList.contains("selected-subscription")) {
+        dp[i] = true;
+      }
+    }
+
+    // Remove items based on DP table
+    for (let i = 0; i < dp.length; i++) {
+      if (dp[i]) {
+        const item = children[i];
+        subList.removeChild(item);
+        removeSubscription(item.dataset.value);
+      }
+    }
+  }
+
+  // Divide and Conquer
+  function reverseListDivideAndConquer(list) {
+    // Base case: if the list is empty or has one element, it is already reversed
+    if (list.length <= 1) {
+      return list;
+    }
+
+    // Divide: Split the list into two halves
+    const mid = Math.floor(list.length / 2);
+    const left = list.slice(0, mid);
+    const right = list.slice(mid);
+
+    // Conquer: Reverse each half recursively
+    const reversedLeft = reverseListDivideAndConquer(left);
+    const reversedRight = reverseListDivideAndConquer(right);
+
+    // Combine: Concatenate the reversed right half followed by the reversed left half
+    return reversedRight.concat(reversedLeft);
   }
 });
