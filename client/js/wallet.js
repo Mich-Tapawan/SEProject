@@ -291,8 +291,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      const subData = await response.json();
-      console.log(subData);
+      const data = await response.json();
+      console.log(data);
+
+      const subData = data.subscriptions;
+      currentBalance.innerHTML = `₱${data.updatedBalance}`;
 
       //Clear sub list
       const items = Array.from(subList.children);

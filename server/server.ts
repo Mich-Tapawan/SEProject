@@ -354,7 +354,11 @@ app.get(
 
       if (expiredSubscriptions.length > 0) {
         const today = new Date();
+        const nextMonth = new Date(today);
+        nextMonth.setMonth(nextMonth.getMonth() + 1); // Add one month
+
         expiredSubscriptions.forEach((expiredSubscription) => {
+          // Insert notification for the expired subscription
           const notification: Notification = {
             service: expiredSubscription.service,
             price: expiredSubscription.price,
@@ -364,37 +368,64 @@ app.get(
             dateNotified: today.toLocaleDateString("en-US"), // Format: mm/dd/yyyy
             alert: "expired",
           };
+          console.log("Inserted notification: ", notification);
           notificationCollection.insertOne(notification);
         });
 
-        // Remove expired subscriptions from the collection
-        await subCollection.deleteMany({
-          userID: objectId,
-          end: { $lt: currentDateString }, // Compare as strings
-        });
-        console.log(
-          `Removed ${expiredSubscriptions.length} expired subscriptions for user ${userID}`
+        // Renew expired subscriptions by updating their start and end dates
+        const bulkUpdateOps = expiredSubscriptions.map(
+          (expiredSubscription) => {
+            const newStart = new Date(); // Current date as new start
+            const newEnd = new Date(newStart);
+            newEnd.setMonth(newEnd.getMonth() + 1); // Add one month to the end date
+
+            return {
+              updateOne: {
+                filter: { _id: expiredSubscription._id },
+                update: {
+                  $set: {
+                    start: newStart.toISOString().split("T")[0], // "yyyy-mm-dd"
+                    end: newEnd.toISOString().split("T")[0], // "yyyy-mm-dd"
+                  },
+                },
+              },
+            };
+          }
         );
+
+        await subCollection.bulkWrite(bulkUpdateOps);
       }
 
-      // Now, fetch all active subscriptions (not expired)
+      // Update user balance upon renewal of subscriptions
+      const usersCollection = client.db("MMM").collection("users");
+      let total = 0;
+      expiredSubscriptions.forEach((subscription) => {
+        total += Number(subscription.price);
+      });
+      const user = await usersCollection.findOne({ _id: objectId });
+
+      let updatedBalance = user?.balance - total;
+      await usersCollection.updateOne(
+        { _id: objectId },
+        { $set: { balance: updatedBalance } }
+      );
+
+      console.log(
+        `Renewed ${expiredSubscriptions.length} expired subscriptions for user ${userID} and subtracted ${total}
+          \n Current balance: ${updatedBalance}`
+      );
+
+      // Return the updated subscription list
       const subscriptions = await subCollection
         .find({ userID: objectId })
         .toArray();
-      console.log(subscriptions);
 
-      if (subscriptions.length < 1) {
-        console.log("User has no registered subscription");
-        res
-          .status(400)
-          .json({ message: "User has no registered subscriptions" });
-        return;
-      } else {
-        res.status(200).json(subscriptions);
-      }
+      res
+        .status(200)
+        .json({ subscriptions: subscriptions, updatedBalance: updatedBalance });
     } catch (error) {
-      console.error("Error accessing wallet:", error);
-      res.status(500).json({ message: "Internal server error" });
+      console.error("Error getting subscriptions:", error);
+      res.status(500).json({ message: "Error getting subscriptions" });
       return;
     }
   }
@@ -722,15 +753,21 @@ app.delete(
         .db("MMM")
         .collection("subscriptions");
 
-      // update user monthly limit and expenses to update budget used percentage
+      // update user monthly expenses to update budget used percentage
       const usersCollection = client.db("MMM").collection("users");
       const subscription = await subscriptionCollection.findOne({
         _id: objectId,
       });
-      const userID = new ObjectId(subscription?.userID);
 
-      await usersCollection.updateOne({ _id: userID }, { $set: {} });
+      const userID = new ObjectId(subscription?.userID);
       const user = await usersCollection.findOne({ _id: userID });
+      const updatedMonthlyExpenses =
+        user?.monthlyExpenses - subscription?.price;
+      console.log("updatedMonthlyExpenses: ", updatedMonthlyExpenses);
+      await usersCollection.updateOne(
+        { _id: userID },
+        { $set: { monthlyExpenses: updatedMonthlyExpenses } }
+      );
 
       console.log(
         subscription,
@@ -742,7 +779,7 @@ app.delete(
       await subscriptionCollection.deleteOne({ _id: objectId });
 
       res.status(200).json({
-        monthlyExpenses: user?.monthlyExpenses,
+        monthlyExpenses: updatedMonthlyExpenses,
         monthlyLimit: user?.monthlyLimit,
       });
     } catch (error) {

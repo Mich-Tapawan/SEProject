@@ -52,9 +52,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           // Insert notification information
           if (notification.alert === "expired") {
-            h5.textContent = `${notification.service} Subscription has expired`;
-            p.textContent = `Your ${notification.plan} Plan has expired. Pleas subscribe again to enjoy the service!`;
-            h6.textContent = `EXPIRED`;
+            h5.textContent = `${notification.service} Subscription has been renewed`;
+            p.textContent = `Your ${notification.plan} Plan has been renewed! P${notification.price} has been deducted from your wallet.`;
+            h6.textContent = `RENEWED`;
           } else if (notification.alert === "activated") {
             h5.textContent = `${notification.service} Subscription is successfully activated`;
             p.textContent = `You have successfully subscribed to ${notification.service} on a ${notification.plan} Plan. P${notification.price} will automatically be deducted from your wallet per month.`;
