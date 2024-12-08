@@ -190,6 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   transferSubmit.addEventListener("click", () => {
     const data = localStorage.getItem("userBalance");
     const userBalance = JSON.parse(data);
+    console.log(userBalance);
     if (transferAmount.value == "") {
       alert("Please enter a valid amount to transfer.");
       return;

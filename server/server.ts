@@ -834,7 +834,14 @@ app.delete(
       console.log("updatedMonthlyExpenses: ", updatedMonthlyExpenses);
       await usersCollection.updateOne(
         { _id: userID },
-        { $set: { monthlyExpenses: updatedMonthlyExpenses } }
+        {
+          $set: {
+            monthlyExpenses: updatedMonthlyExpenses,
+          },
+          $inc: {
+            activeSubs: -1,
+          },
+        }
       );
 
       console.log(

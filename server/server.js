@@ -651,7 +651,14 @@ app.delete("/removeSubscription/:id", (req, res) => __awaiter(void 0, void 0, vo
         const user = yield usersCollection.findOne({ _id: userID });
         const updatedMonthlyExpenses = (user === null || user === void 0 ? void 0 : user.monthlyExpenses) - (subscription === null || subscription === void 0 ? void 0 : subscription.price);
         console.log("updatedMonthlyExpenses: ", updatedMonthlyExpenses);
-        yield usersCollection.updateOne({ _id: userID }, { $set: { monthlyExpenses: updatedMonthlyExpenses } });
+        yield usersCollection.updateOne({ _id: userID }, {
+            $set: {
+                monthlyExpenses: updatedMonthlyExpenses,
+            },
+            $inc: {
+                activeSubs: -1,
+            },
+        });
         console.log(subscription, userID, user === null || user === void 0 ? void 0 : user.monthlyExpenses, user === null || user === void 0 ? void 0 : user.monthlyLimit);
         yield subscriptionCollection.deleteOne({ _id: objectId });
         res.status(200).json({

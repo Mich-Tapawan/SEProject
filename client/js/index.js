@@ -34,6 +34,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         window.location.href = "/client/pages/home.html";
+      } else {
+        errorText.innerHTML =
+          "No account found. Please enter valid email and password";
+        setTimeout(() => {
+          errorText.innerHTML = "";
+        }, 4000);
       }
     } catch (error) {
       console.error("Error logging in", error);
